@@ -1,4 +1,4 @@
-import type { MetaFunction } from '@remix-run/node'
+import type { LinksFunction, MetaFunction } from '@remix-run/node'
 
 import {
   Links,
@@ -9,11 +9,18 @@ import {
   ScrollRestoration,
 } from '@remix-run/react'
 
+import styles from './root.css'
+
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
-  title: 'New Remix App',
+  title: 'Kamuy',
+  description: 'A chat app inspired by WhatsApp Web',
   viewport: 'width=device-width,initial-scale=1',
 })
+
+export const links: LinksFunction = () => {
+  return [{ rel: 'stylesheet', href: styles }]
+}
 
 export default function App() {
   return (
