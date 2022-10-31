@@ -8,6 +8,7 @@
     "lint-fix": "eslint --ext .tsx,.jsx,.js,.ts --ignore-path .gitignore --fix app"
   },
   "dependencies": {
+    "@fontsource/overpass": "^4.5.10",
     "@remix-run/node": "^1.7.4",
     "@remix-run/react": "^1.7.4",
     "@remix-run/vercel": "^1.7.4",
@@ -29,6 +30,7 @@
     "eslint": "^8.23.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-remix": "^1.0.1",
+    "remix-flat-routes": "^0.4.4",
     "typescript": "^4.7.4"
   },
   "engines": {

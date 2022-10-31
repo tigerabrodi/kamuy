@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@fontsource/overpass': ^4.5.10
   '@remix-run/dev': ^1.7.4
   '@remix-run/eslint-config': ^1.7.4
   '@remix-run/node': ^1.7.4
@@ -19,10 +20,12 @@ specifiers:
   react: ^18.2.0
   react-dom: ^18.2.0
   react-hot-toast: ^2.4.0
+  remix-flat-routes: ^0.4.4
   typescript: ^4.7.4
   zod: ^3.19.1
 
 dependencies:
+  '@fontsource/overpass': 4.5.10
   '@remix-run/node': 1.7.4_biqbaboplfbrettd7655fr4n2y
   '@remix-run/react': 1.7.4_biqbaboplfbrettd7655fr4n2y
   '@remix-run/vercel': 1.7.4_i4dm2q4jiaqsjpijmydxyrkc6m
@@ -44,6 +47,7 @@ devDependencies:
   eslint: 8.26.0
   eslint-plugin-import: 2.26.0_c2flhriocdzler6lrwbyxxyoca
   eslint-plugin-remix: 1.0.1
+  remix-flat-routes: 0.4.4
   typescript: 4.8.4
 
 packages:
@@ -1877,6 +1881,10 @@ packages:
     resolution: {integrity: sha512-CJW8vxt6bJaBeco2VnlJjmCmAkrrtIdf0GGKvpAB4J5gw8Gi0rHb+qsgKp6LsyS5W6ALPLawLs7phZmw02dvLw==}
     dev: false
 
+  /@fontsource/overpass/4.5.10:
+    resolution: {integrity: sha512-6psYByKRd00tmIMYDcfcHda/w1hxfyeLKoVTxzegKbPcGGyZ4si61wxO4MzAIQdMHWAPiXkAWE1BU7RH5+J4Lw==}
+    dev: false
+
   /@gar/promisify/1.1.3:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
     dev: true
@@ -3019,6 +3027,12 @@ packages:
     dependencies:
       balanced-match: 1.0.2
       concat-map: 0.0.1
+
+  /brace-expansion/2.0.1:
+    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
+    dependencies:
+      balanced-match: 1.0.2
+    dev: true
 
   /braces/2.3.2:
     resolution: {integrity: sha512-aNdbnj9P8PjdXU4ybaWLK2IF3jc/EoDYbC7AazW6to3TRsfXxscC9UXOB5iDiEQrkyIbWp2SLQda4+QAa7nc3w==}
@@ -6604,6 +6618,13 @@ packages:
     dependencies:
       brace-expansion: 1.1.11
 
+  /minimatch/5.1.0:
+    resolution: {integrity: sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==}
+    engines: {node: '>=10'}
+    dependencies:
+      brace-expansion: 2.0.1
+    dev: true
+
   /minimist/1.2.7:
     resolution: {integrity: sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==}
     dev: true
@@ -7520,6 +7541,13 @@ packages:
       '@types/mdast': 3.0.10
       mdast-util-to-hast: 11.3.0
       unified: 10.1.2
+    dev: true
+
+  /remix-flat-routes/0.4.4:
+    resolution: {integrity: sha512-DmdOm50nXvksW6cX2m+IJIYb9TLus9SgfhgRO/trwkvVIB9NusN/VkiYP/vclGMFWEJky/Z3L2C3BbkNIYGCqg==}
+    hasBin: true
+    dependencies:
+      minimatch: 5.1.0
     dev: true
 
   /repeat-element/1.1.4:

@@ -60,5 +60,10 @@
       }
     ]
   },
-  "ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/build/**"]
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "remix.config.js"
+  ]
 }
