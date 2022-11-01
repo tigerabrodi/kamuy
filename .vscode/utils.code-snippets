@@ -20,6 +20,16 @@
     "prefix": "exp",
     "body": ["export function $1 () {", "return ($2)", "}"]
   },
+  "sr only styles": {
+    "scope": "typescript,javascript,javascriptreact,typescriptreact",
+    "prefix": "sro",
+    "body": ["sr-only"]
+  },
+  "class": {
+    "scope": "typescript,javascript,javascriptreact,typescriptreact",
+    "prefix": "cls",
+    "body": ["className=\"$1\""]
+  },
   "export everything": {
     "scope": "typescript,javascript,javascriptreact,typescriptreact",
     "prefix": "exev",
