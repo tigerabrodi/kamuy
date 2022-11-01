@@ -9,3 +9,9 @@ node_modules
 /public/build
 /api/index.js
 /api/index.js.map
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/test-results/
+/playwright-report/
+/playwright/.cache/

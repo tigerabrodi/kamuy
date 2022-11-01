@@ -5,7 +5,9 @@
     "build": "remix build",
     "dev": "remix dev",
     "lint": "eslint --ext .tsx,.jsx,.js,.ts --ignore-path .gitignore app",
-    "lint-fix": "eslint --ext .tsx,.jsx,.js,.ts --ignore-path .gitignore --fix app"
+    "lint-fix": "eslint --ext .tsx,.jsx,.js,.ts --ignore-path .gitignore --fix app",
+    "test": "playwright test --project=chromium",
+    "test-debug": "playwright test --debug --project=chromium"
   },
   "dependencies": {
     "@fontsource/overpass": "^4.5.10",
@@ -20,6 +22,8 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "@playwright/test": "^1.27.1",
     "@remix-run/dev": "^1.7.4",
     "@remix-run/eslint-config": "^1.7.4",
     "@remix-run/serve": "^1.7.4",
