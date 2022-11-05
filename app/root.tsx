@@ -4,7 +4,6 @@ import type {
   MetaFunction,
   Session,
 } from '@remix-run/node'
-import type { FirebaseError } from 'firebase/app'
 
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/node'
@@ -17,7 +16,6 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react'
-import { AuthErrorCodes } from 'firebase/auth'
 import { useEffect } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { z } from 'zod'
@@ -87,33 +85,20 @@ export const loader = async ({ request }: DataFunctionArgs) => {
       const user = await getUserWithUid(decodedToken.uid)
       return json({ ...validationTextsData, user }, sessionHeaders)
     } else {
-      redirect('/chats', {
-        ...sessionHeaders,
-        status: 301,
-      })
+      return redirect('/chats', sessionHeaders)
     }
   } catch (error) {
-    // To get the types of the error
-    const firebaseError = error as FirebaseError
-
-    const canNotVerifyToken =
-      firebaseError.code === AuthErrorCodes.ARGUMENT_ERROR
-
-    if (canNotVerifyToken) {
-      const isOnLoginPage = pathname === '/login'
-      if (isOnLoginPage) {
-        return json(validationTextsData, {
-          ...sessionHeaders,
-        })
-      }
-
+    const isOnLoginPage = pathname === '/login'
+    if (isOnLoginPage) {
+      return json(validationTextsData, {
+        ...sessionHeaders,
+      })
+    } else {
       return redirect('/login', {
         ...sessionHeaders,
       })
     }
   }
-
-  return json(validationTextsData, sessionHeaders)
 }
 
 export default function App() {
