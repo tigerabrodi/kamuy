@@ -5,7 +5,7 @@ import { doc, getDoc } from 'firebase/firestore'
 
 import { getServerFirebase } from './firebase.server'
 
-export const getUserWithUid = async (uid: string): Promise<User> => {
+export async function getUserWithUid(uid: string): Promise<User> {
   const { firebaseDb } = getServerFirebase()
 
   const userDoc = doc(firebaseDb, `users/${uid}`) as DocumentReference<User>
