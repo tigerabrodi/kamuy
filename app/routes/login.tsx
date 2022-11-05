@@ -1,24 +1,34 @@
 import type { ActionFunction, LinksFunction } from '@remix-run/node'
-import type { FirebaseError } from 'firebase/app'
 
+import { json } from '@remix-run/node'
 import { redirect } from '@remix-run/node'
 import { Form } from '@remix-run/react'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 
 import styles from './login.css'
 
 import { getServerFirebase } from '~/firebase/firebase.server'
+import { createUserWithUser } from '~/firebase/write.server'
 import { authCommitSession, authGetSession } from '~/sessions/auth.server'
-import { validationGetSession } from '~/sessions/validationStates.server'
+import {
+  validationCommitSession,
+  validationGetSession,
+} from '~/sessions/validationStates.server'
 import { ACCESS_TOKEN, SET_COOKIE, validationStates } from '~/types'
 import { getCookie } from '~/utils/getCookie'
 
 const USERNAME_PLACEHOLDER = 'johnl123'
 const EMAIL_PLACEHOLDER = 'john@gmail.com'
 
-const SIGNED_IN_SUCCESS_MESSAGE = 'Signed in successfully!'
+export const SIGNED_IN_SUCCESS_MESSAGE = 'Signed in successfully!'
+export const SIGNED_UP_SUCCESS_MESSAGE = 'Signed up successfully!'
+export const SOMETHING_WENT_WRONG_MESSAGE =
+  'Something went wrong, please fill in the values again!'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -32,7 +42,7 @@ export default function Login() {
         If your account doesn’t exist, we'll create one, otherwise you just sign
         in.
       </p>
-      <Form>
+      <Form method="post">
         <div className="login__group">
           <label htmlFor="email">Email</label>
           <input
@@ -81,14 +91,15 @@ const FormSchema = zfd.formData(
 )
 
 export const action: ActionFunction = async ({ request }) => {
-  const { email, username, password } = FormSchema.parse(
-    await request.formData()
-  )
-
   const { firebaseAuth } = getServerFirebase()
 
-  const validationSession = await validationGetSession(getCookie(request))
-  const authSession = await authGetSession(getCookie(request))
+  const [formData, validationSession, authSession] = await Promise.all([
+    request.formData(),
+    validationGetSession(getCookie(request)),
+    authGetSession(getCookie(request)),
+  ])
+
+  const { email, username, password } = FormSchema.parse(formData)
 
   try {
     const { user } = await signInWithEmailAndPassword(
@@ -97,23 +108,67 @@ export const action: ActionFunction = async ({ request }) => {
       password
     )
 
-    const token = await user.getIdToken()
+    authSession.set(ACCESS_TOKEN, await user.getIdToken())
+    validationSession.flash(validationStates.success, SIGNED_IN_SUCCESS_MESSAGE)
 
-    authSession.set(ACCESS_TOKEN, token)
-    validationSession.flash(validationStates.error, SIGNED_IN_SUCCESS_MESSAGE)
+    const [authCommittedSession, validationCommitedSession] = await Promise.all(
+      [
+        authCommitSession(authSession),
+        validationCommitSession(validationSession),
+      ]
+    )
 
     return redirect('/chats', {
-      headers: {
-        [SET_COOKIE]: await authCommitSession(authSession),
-      },
+      headers: [
+        [SET_COOKIE, authCommittedSession],
+        [SET_COOKIE, validationCommitedSession],
+      ],
     })
   } catch (error) {
-    const firebaseError = error as FirebaseError
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      )
 
-    console.log(firebaseError)
+      const [token] = await Promise.all([
+        user.getIdToken(),
+        createUserWithUser({ email, username, id: user.uid, chats: [] }),
+      ])
 
-    // Check if the user exists through email, username can be duplicated, if so, throw an error, because incorrect password perhaps
+      authSession.set(ACCESS_TOKEN, token)
+      validationSession.flash(
+        validationStates.success,
+        SIGNED_IN_SUCCESS_MESSAGE
+      )
 
-    // if the user doesn't exist, create a new user
+      const [authCommittedSession, validationCommitedSession] =
+        await Promise.all([
+          authCommitSession(authSession),
+          validationCommitSession(validationSession),
+        ])
+
+      return redirect('/chats', {
+        headers: [
+          [SET_COOKIE, authCommittedSession],
+          [SET_COOKIE, validationCommitedSession],
+        ],
+      })
+    } catch (error) {
+      validationSession.flash(
+        validationStates.error,
+        SOMETHING_WENT_WRONG_MESSAGE
+      )
+
+      return json(
+        {},
+        {
+          headers: {
+            [SET_COOKIE]: await validationCommitSession(validationSession),
+          },
+        }
+      )
+    }
   }
 }
