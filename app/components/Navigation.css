@@ -1,0 +1,16 @@
+.navigation {
+  width: 100%;
+  background-color: var(--colors-teal-600);
+  height: 120px;
+  display: flex;
+  align-items: center;
+  padding-left: 75px;
+}
+
+.navigation a {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
