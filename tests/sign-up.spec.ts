@@ -3,6 +3,8 @@ import type { TestUser } from './types'
 import { faker } from '@faker-js/faker'
 import { test } from '@playwright/test'
 
+import { SIGNED_UP_SUCCESS_MESSAGE } from '~/routes/login'
+
 const user: TestUser = {
   email: faker.internet.email(),
   username: faker.internet.userName(),
@@ -27,7 +29,7 @@ test('User can sign up', async ({ page }) => {
 
   const signUpToast = page.getByRole('status')
 
-  signUpToast.getByText('You have signed up successfully.')
+  signUpToast.getByText(SIGNED_UP_SUCCESS_MESSAGE)
 
   await page.waitForNavigation()
 
