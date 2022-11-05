@@ -55,5 +55,10 @@
     "scope": "css",
     "prefix": "clrt",
     "body": ["var(--colors-teal-$1)"]
+  },
+  "shadows": {
+    "scope": "css",
+    "prefix": "shw",
+    "body": ["var(--shadows-$1)"]
   }
 }
