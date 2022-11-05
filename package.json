@@ -16,10 +16,12 @@
     "@remix-run/vercel": "^1.7.4",
     "@vercel/node": "^2.4.4",
     "firebase": "^9.13.0",
+    "firebase-admin": "^11.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
-    "zod": "^3.19.1"
+    "zod": "^3.19.1",
+    "zod-form-data": "^1.2.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
