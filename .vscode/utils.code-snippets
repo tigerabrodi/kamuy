@@ -35,6 +35,16 @@
     "prefix": "exev",
     "body": ["export * from './$1'"]
   },
+  "playwright to be defined": {
+    "scope": "typescript,javascript,javascriptreact,typescriptreact",
+    "prefix": "ebf",
+    "body": ["await expect($1).toBeDefined()"]
+  },
+  "playwright to be visible": {
+    "scope": "typescript,javascript,javascriptreact,typescriptreact",
+    "prefix": "ebv",
+    "body": ["await expect($1).toBeVisible()"]
+  },
   "Write calculated font size": {
     "scope": "css",
     "prefix": "fnz",
