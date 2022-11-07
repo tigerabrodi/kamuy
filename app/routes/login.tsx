@@ -25,9 +25,9 @@ import { getCookie } from '~/utils/getCookie'
 const USERNAME_PLACEHOLDER = 'johnl123'
 const EMAIL_PLACEHOLDER = 'john@gmail.com'
 
-export const SIGNED_IN_SUCCESS_MESSAGE = 'Signed in successfully!'
-export const SIGNED_UP_SUCCESS_MESSAGE = 'Signed up successfully!'
-export const SOMETHING_WENT_WRONG_MESSAGE =
+const SIGNED_IN_SUCCESS_MESSAGE = 'Signed in successfully!'
+const SIGNED_UP_SUCCESS_MESSAGE = 'Signed up successfully!'
+const SOMETHING_WENT_WRONG_MESSAGE =
   'Something went wrong, please fill in the values again!'
 
 export const links: LinksFunction = () => {
@@ -140,7 +140,7 @@ export const action: ActionFunction = async ({ request }) => {
       authSession.set(ACCESS_TOKEN, token)
       validationSession.flash(
         validationStates.success,
-        SIGNED_IN_SUCCESS_MESSAGE
+        SIGNED_UP_SUCCESS_MESSAGE
       )
 
       const [authCommittedSession, validationCommitedSession] =
