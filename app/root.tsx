@@ -42,7 +42,7 @@ function getValidationTexts(validationSession: Session) {
     z
       .string()
       .optional()
-      .parse(validationSession.get(validationStates.error)) ?? null
+      .parse(validationSession.get(validationStates.success)) ?? null
 
   return { validationSessionErrorText, validationSessionSuccessText }
 }
@@ -68,9 +68,11 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const validationTextsData = getValidationTexts(validationSession)
 
   const authSession = await authGetSession(getCookie(request))
+
   const token = authSession.get(ACCESS_TOKEN)
 
   const pathname = new URL(request.url).pathname
+
   const sessionHeaders = {
     headers: {
       [SET_COOKIE]: await validationCommitSession(validationSession),
@@ -90,13 +92,9 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   } catch (error) {
     const isOnLoginPage = pathname === '/login'
     if (isOnLoginPage) {
-      return json(validationTextsData, {
-        ...sessionHeaders,
-      })
+      return json(validationTextsData, sessionHeaders)
     } else {
-      return redirect('/login', {
-        ...sessionHeaders,
-      })
+      return redirect('/login', sessionHeaders)
     }
   }
 }
@@ -113,7 +111,7 @@ export default function App() {
     }
 
     if (validationSessionSuccessText) {
-      toast.error(validationSessionSuccessText)
+      toast.success(validationSessionSuccessText)
     }
 
     // Necessary to have the `loaderData` here otherwise the effect won't re-run if the validation texts contain the same strings since string is a primitive type
