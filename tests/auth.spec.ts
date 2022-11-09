@@ -25,7 +25,7 @@ test('User can sign up', async ({ page }) => {
 
   await expect(
     page.getByText(
-      'If your account doesn’t exist, we’ll create one, otherwise you just sign in.'
+      "If your account doesn’t exist, we'll create one, otherwise you just sign in."
     )
   ).toBeVisible()
 
@@ -38,8 +38,6 @@ test('User can sign up', async ({ page }) => {
   const signUpToast = page.getByRole('status')
 
   await expect(signUpToast.getByText(SIGNED_UP_SUCCESS_MESSAGE)).toBeVisible()
-
-  await page.waitForNavigation()
 })
 
 test('User can sign in', async ({ page }) => {
@@ -67,5 +65,23 @@ test('User can sign in', async ({ page }) => {
     page.getByText(
       'Chat with multiple friends and stay connected with people all over the world.'
     )
+  ).toBeVisible()
+})
+
+test('Error when trying to sign in with existing user but wrong password.', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await page.getByLabel('Email').type(existingUser.email)
+  await page.getByLabel('Username').type(existingUser.username)
+  await page.getByLabel('Password').type('NLKSNKLSNKLSNF')
+
+  await page.getByRole('button', { name: 'Sign In' }).click()
+
+  const signInErrorToast = page.getByRole('status')
+
+  await expect(
+    signInErrorToast.getByText(SOMETHING_WENT_WRONG_MESSAGE)
   ).toBeVisible()
 })
