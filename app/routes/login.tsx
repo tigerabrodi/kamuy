@@ -19,7 +19,12 @@ import {
   validationCommitSession,
   validationGetSession,
 } from '~/sessions/validationStates.server'
-import { ACCESS_TOKEN, SET_COOKIE, validationStates } from '~/types'
+import {
+  ACCESS_TOKEN,
+  SET_COOKIE,
+  VALIDATION_STATE_ERROR,
+  VALIDATION_STATE_SUCCESS,
+} from '~/types'
 import { getCookie } from '~/utils/getCookie'
 
 const USERNAME_PLACEHOLDER = 'johnl123'
@@ -109,7 +114,7 @@ export const action: ActionFunction = async ({ request }) => {
     )
 
     authSession.set(ACCESS_TOKEN, await user.getIdToken())
-    validationSession.flash(validationStates.success, SIGNED_IN_SUCCESS_MESSAGE)
+    validationSession.flash(VALIDATION_STATE_SUCCESS, SIGNED_IN_SUCCESS_MESSAGE)
 
     const [authCommittedSession, validationCommitedSession] = await Promise.all(
       [
@@ -139,7 +144,7 @@ export const action: ActionFunction = async ({ request }) => {
 
       authSession.set(ACCESS_TOKEN, token)
       validationSession.flash(
-        validationStates.success,
+        VALIDATION_STATE_SUCCESS,
         SIGNED_UP_SUCCESS_MESSAGE
       )
 
@@ -157,7 +162,7 @@ export const action: ActionFunction = async ({ request }) => {
       })
     } catch (error) {
       validationSession.flash(
-        validationStates.error,
+        VALIDATION_STATE_ERROR,
         SOMETHING_WENT_WRONG_MESSAGE
       )
 

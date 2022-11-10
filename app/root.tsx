@@ -29,7 +29,12 @@ import {
   validationCommitSession,
   validationGetSession,
 } from './sessions/validationStates.server'
-import { ACCESS_TOKEN, SET_COOKIE, validationStates } from './types'
+import {
+  ACCESS_TOKEN,
+  SET_COOKIE,
+  VALIDATION_STATE_ERROR,
+  VALIDATION_STATE_SUCCESS,
+} from './types'
 import { getCookie } from './utils/getCookie'
 
 function getValidationTexts(validationSession: Session) {
@@ -37,12 +42,12 @@ function getValidationTexts(validationSession: Session) {
     z
       .string()
       .optional()
-      .parse(validationSession.get(validationStates.error)) ?? null
+      .parse(validationSession.get(VALIDATION_STATE_ERROR)) ?? null
   const validationSessionSuccessText =
     z
       .string()
       .optional()
-      .parse(validationSession.get(validationStates.success)) ?? null
+      .parse(validationSession.get(VALIDATION_STATE_SUCCESS)) ?? null
 
   return { validationSessionErrorText, validationSessionSuccessText }
 }

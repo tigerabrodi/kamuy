@@ -1,7 +1,5 @@
-export const validationStates = {
-  success: 'success',
-  error: 'error',
-} as const
+export const VALIDATION_STATE_ERROR = 'success'
+export const VALIDATION_STATE_SUCCESS = 'error'
 
 export const ACCESS_TOKEN = 'access_token'
 
