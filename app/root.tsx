@@ -22,7 +22,6 @@ import { z } from 'zod'
 
 import { Navigation, navigationStyles } from './components'
 import { getServerFirebase } from './firebase/firebase.server'
-import { getUserWithUid } from './firebase/read.server'
 import styles from './root.css'
 import { authGetSession } from './sessions/auth.server'
 import {
@@ -85,12 +84,11 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   }
 
   try {
-    const decodedToken = await firebaseAdminAuth.verifyIdToken(token)
+    await firebaseAdminAuth.verifyIdToken(token)
     const isInsideChatRoutes = pathname.startsWith('/chats')
 
     if (isInsideChatRoutes) {
-      const user = await getUserWithUid(decodedToken.uid)
-      return json({ ...validationTextsData, user }, sessionHeaders)
+      return json({ ...validationTextsData }, sessionHeaders)
     } else {
       return redirect('/chats', sessionHeaders)
     }
