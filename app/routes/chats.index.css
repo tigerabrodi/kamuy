@@ -1,0 +1,28 @@
+.chat__default {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  row-gap: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.chat__default svg {
+  width: 300px;
+}
+
+.chat__default h1 {
+  font-weight: bold;
+  font-size: calc(1rem * 20 / 16);
+  color: var(--colors-teal-800);
+}
+
+.chat__default p {
+  font-weight: 400;
+  font-size: calc(1rem * 14 / 16);
+  color: var(--colors-teal-800);
+  text-align: center;
+  width: 40ch;
+}

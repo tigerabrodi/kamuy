@@ -1,3 +1,106 @@
-div {
-  color: green;
+.chats {
+  width: 1016px;
+  height: 982px;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: var(--shadows-small);
+}
+
+.chats__items {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  width: 30%;
+  background-color: var(--colors-white);
+  box-shadow: var(--shadows-inner);
+}
+
+.chats__items-user {
+  height: 52px;
+  background-color: var(--colors-gray);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  box-shadow: var(--shadows-inner);
+}
+
+.chats__items-user h2 {
+  color: var(--colors-black);
+  font-weight: bold;
+  font-size: calc(1rem * 14 / 16);
+}
+
+.chats__items-user button {
+  background-color: var(--colors-teal-600);
+  border-radius: 2px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadows-medium);
+}
+
+.chats__items-user button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.chats__items-search {
+  width: 225px;
+  height: 30px;
+  margin-top: 10px;
+  background-color: var(--colors-gray);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  column-gap: 5px;
+}
+
+.chats__items-search svg {
+  width: 17px;
+  height: 17px;
+}
+
+.chats__items-search input {
+  width: 80%;
+  height: 100%;
+  color: var(--colors-teal-800);
+  font-size: calc(1rem * 13 / 16);
+  font-weight: 400;
+  background-color: var(--colors-gray);
+}
+
+.chats__items-search input::placeholder {
+  color: inherit;
+}
+
+.chats__items-chats {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.chats__items-chats-none {
+  margin-top: 50px;
+  font-weight: 500;
+  font-size: calc(1rem * 12 / 16);
+  color: var(--colors-black);
+  font-weight: bold;
+}
+
+.chats__outlet-wrapper {
+  width: 70%;
+  height: 100%;
+  background-color: var(--colors-gray);
+  position: relative;
 }
