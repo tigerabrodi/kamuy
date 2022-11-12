@@ -26,7 +26,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   try {
     const decodedToken = await firebaseAdminAuth.verifyIdToken(token)
     const user = await getUserWithUid(decodedToken.uid)
-    return json({ user }, { headers: { 'cache-control': 'no-store' } })
+    return json({ user })
   } catch (error) {
     throw json({ error: 'You are unauthenticated.' }, { status: 401 })
   }

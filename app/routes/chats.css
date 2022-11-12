@@ -89,6 +89,8 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
+  border-top: 2px solid var(--colors-gray);
+  margin-top: 10px;
 }
 
 .chats__items-chats-none {
