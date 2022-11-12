@@ -7,6 +7,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   box-shadow: var(--shadows-small);
+  border-radius: 2px;
 }
 
 .chats__items {
@@ -53,7 +54,7 @@
 }
 
 .chats__items-search {
-  width: 225px;
+  width: 250px;
   height: 30px;
   margin-top: 10px;
   background-color: var(--colors-gray);
@@ -93,7 +94,7 @@
 .chats__items-chats-none {
   margin-top: 50px;
   font-weight: 500;
-  font-size: calc(1rem * 12 / 16);
+  font-size: calc(1rem * 13 / 16);
   color: var(--colors-black);
   font-weight: bold;
 }
