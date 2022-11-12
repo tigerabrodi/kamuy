@@ -113,7 +113,7 @@ export const action: ActionFunction = async ({ request }) => {
       password
     )
 
-    authSession.set(ACCESS_TOKEN, await user.getIdToken())
+    authSession.set(ACCESS_TOKEN, await user.getIdToken(true))
     validationSession.flash(VALIDATION_STATE_SUCCESS, SIGNED_IN_SUCCESS_MESSAGE)
 
     const [authCommittedSession, validationCommitedSession] = await Promise.all(
@@ -138,7 +138,7 @@ export const action: ActionFunction = async ({ request }) => {
       )
 
       const [token] = await Promise.all([
-        user.getIdToken(),
+        user.getIdToken(true),
         createUserWithUser({ email, username, id: user.uid, chats: [] }),
       ])
 
