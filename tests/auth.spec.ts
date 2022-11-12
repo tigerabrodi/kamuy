@@ -53,8 +53,6 @@ test('User can sign in', async ({ page }) => {
 
   await expect(signInToast.getByText(SIGNED_IN_SUCCESS_MESSAGE)).toBeVisible()
 
-  await page.waitForNavigation()
-
   await expect(page.getByRole('heading', { name: 'Kamuy' })).toBeVisible()
 
   await expect(page.getByText(existingUser.username)).toBeVisible()
