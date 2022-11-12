@@ -1,7 +1,7 @@
 import type { DataFunctionArgs, LinksFunction } from '@remix-run/node'
 
 import { json } from '@remix-run/node'
-import { Outlet, useLoaderData } from '@remix-run/react'
+import { Form, Outlet, useLoaderData } from '@remix-run/react'
 
 import styles from './chats.css'
 
@@ -24,8 +24,9 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const token = authSession.get(ACCESS_TOKEN)
 
   try {
-    const decodedToken = await firebaseAdminAuth.verifyIdToken(token)
+    const decodedToken = await firebaseAdminAuth.verifySessionCookie(token)
     const user = await getUserWithUid(decodedToken.uid)
+
     return json({ user })
   } catch (error) {
     throw json({ error: 'You are unauthenticated.' }, { status: 401 })
@@ -40,9 +41,11 @@ export default function Chats() {
       <div className="chats__items">
         <div className="chats__items-user">
           <h2>{user.username}</h2>
-          <button type="submit" aria-label="Create new chat">
-            <Plus />
-          </button>
+          <Form method="post">
+            <button type="submit" aria-label="Create new chat">
+              <Plus />
+            </button>
+          </Form>
         </div>
 
         <div className="chats__items-search">

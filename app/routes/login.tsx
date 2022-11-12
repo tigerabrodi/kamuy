@@ -21,6 +21,7 @@ import {
 } from '~/sessions/validationStates.server'
 import {
   ACCESS_TOKEN,
+  FIVE_DAYS_IN_MILLISECONDS,
   SET_COOKIE,
   VALIDATION_STATE_ERROR,
   VALIDATION_STATE_SUCCESS,
@@ -96,7 +97,7 @@ const FormSchema = zfd.formData(
 )
 
 export const action: ActionFunction = async ({ request }) => {
-  const { firebaseAuth } = getServerFirebase()
+  const { firebaseAuth, firebaseAdminAuth } = getServerFirebase()
 
   const [formData, validationSession, authSession] = await Promise.all([
     request.formData(),
@@ -113,7 +114,12 @@ export const action: ActionFunction = async ({ request }) => {
       password
     )
 
-    authSession.set(ACCESS_TOKEN, await user.getIdToken(true))
+    authSession.set(
+      ACCESS_TOKEN,
+      await firebaseAdminAuth.createSessionCookie(await user.getIdToken(), {
+        expiresIn: FIVE_DAYS_IN_MILLISECONDS,
+      })
+    )
     validationSession.flash(VALIDATION_STATE_SUCCESS, SIGNED_IN_SUCCESS_MESSAGE)
 
     const [authCommittedSession, validationCommitedSession] = await Promise.all(
@@ -130,6 +136,7 @@ export const action: ActionFunction = async ({ request }) => {
       ],
     })
   } catch (error) {
+    console.log(error)
     try {
       const { user } = await createUserWithEmailAndPassword(
         firebaseAuth,
@@ -138,7 +145,9 @@ export const action: ActionFunction = async ({ request }) => {
       )
 
       const [token] = await Promise.all([
-        user.getIdToken(true),
+        firebaseAdminAuth.createSessionCookie(await user.getIdToken(), {
+          expiresIn: FIVE_DAYS_IN_MILLISECONDS,
+        }),
         createUserWithUser({ email, username, id: user.uid, chats: [] }),
       ])
 

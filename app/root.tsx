@@ -84,7 +84,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   }
 
   try {
-    await firebaseAdminAuth.verifyIdToken(token)
+    await firebaseAdminAuth.verifySessionCookie(token)
     const isInsideChatRoutes = pathname.startsWith('/chats')
 
     if (isInsideChatRoutes) {
