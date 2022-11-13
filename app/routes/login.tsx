@@ -12,8 +12,7 @@ import { zfd } from 'zod-form-data'
 
 import styles from './login.css'
 
-import { getServerFirebase } from '~/firebase/firebase.server'
-import { createUserWithUser } from '~/firebase/write.server'
+import { createUserWithUserData, getServerFirebase } from '~/firebase'
 import { authCommitSession, authGetSession } from '~/sessions/auth.server'
 import {
   validationCommitSession,
@@ -148,7 +147,7 @@ export const action: ActionFunction = async ({ request }) => {
         firebaseAdminAuth.createSessionCookie(await user.getIdToken(), {
           expiresIn: FIVE_DAYS_IN_MILLISECONDS,
         }),
-        createUserWithUser({ email, username, id: user.uid, chats: [] }),
+        createUserWithUserData({ email, username, id: user.uid, chats: [] }),
       ])
 
       authSession.set(ACCESS_TOKEN, token)
