@@ -20,9 +20,12 @@ test('User can create a chat and do operations', async ({ page }) => {
   await page.getByRole('button', { name: 'Create new chat' }).click()
 
   // Assert page after chat creation
-  await expect(page.getByRole('heading', { name: UNTITLED })).toBeVisible()
   await expect(
     page.getByRole('button', { name: `Settings of ${UNTITLED} chat` })
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('link', { name: `${UNTITLED} chat` })
   ).toBeVisible()
 
   await expect(page.getByLabel('Enter chat name')).toHaveValue(UNTITLED)
