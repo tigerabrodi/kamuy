@@ -21,6 +21,16 @@ export const ChatSchema = z.object({
   title: z.string(),
   ownerId: z.string(),
   createdAt: TimestampSchema,
+  imageUrl: z.string(),
 })
 
 export type Chat = z.infer<typeof ChatSchema>
+
+export const ParticipantSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  email: z.string().email(),
+  addedAt: TimestampSchema,
+})
+
+export type Participant = z.infer<typeof ParticipantSchema>
