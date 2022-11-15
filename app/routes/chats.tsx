@@ -13,8 +13,7 @@ import {
   createChatForUserWithId,
 } from '~/firebase'
 import { getServerFirebase } from '~/firebase/firebase.server'
-import { Plus, Search } from '~/icons'
-import { DefaultChat } from '~/icons/DefaultChat'
+import { Plus, Search, DefaultChat } from '~/icons'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN } from '~/types'
 import { getCookie } from '~/utils/getCookie'
@@ -77,14 +76,14 @@ export default function Chats() {
               <Link
                 key={chat.id}
                 to={`/chats/${chat.id}`}
-                aria-label={`${chat.title} chat`}
+                aria-label={`${chat.name} chat`}
               >
                 {shouldShowDefaultChatImg(chat) ? (
                   <DefaultChat />
                 ) : (
                   <img src={chat.imageUrl} alt="" />
                 )}
-                <p>{chat.title}</p>
+                <p>{chat.name}</p>
               </Link>
             ))
           ) : (
