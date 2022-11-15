@@ -57,10 +57,6 @@
   font-weight: 500;
 }
 
-.login__group input::placeholder {
-  color: var(--colors-white);
-}
-
 .login__group input:focus {
   box-shadow: var(--shadows-large);
 }

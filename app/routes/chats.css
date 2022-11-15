@@ -79,10 +79,6 @@
   background-color: var(--colors-gray);
 }
 
-.chats__items-search input::placeholder {
-  color: inherit;
-}
-
 .chats__items-chats {
   display: flex;
   align-items: center;
