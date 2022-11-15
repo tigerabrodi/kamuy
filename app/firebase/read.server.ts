@@ -1,11 +1,18 @@
 import type { CollectionReference, DocumentReference } from 'firebase/firestore'
-import type { Chat, User } from '~/types/firebase'
+import type { Chat, Participant, User } from '~/types/firebase'
 
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
+import { z } from 'zod'
 
-import { OWNER_ID } from './constants'
+import {
+  CHATS_COLLECTION,
+  OWNER_ID,
+  PARTICIPANTS_COLLECTION,
+} from './constants'
 import { getServerFirebase } from './firebase.server'
+
+import { ChatSchema, ParticipantSchema } from '~/types/firebase'
 
 export async function getUserWithUid(uid: string): Promise<User> {
   const { firebaseDb } = getServerFirebase()
@@ -26,10 +33,47 @@ export async function getChatsForUserWithUid(
 ): Promise<Array<Chat>> {
   const { firebaseDb } = getServerFirebase()
 
-  const chatsRef = collection(firebaseDb, 'chats') as CollectionReference<Chat>
+  const chatsRef = collection(
+    firebaseDb,
+    CHATS_COLLECTION
+  ) as CollectionReference<Chat>
   const chatsQuery = query<Chat>(chatsRef, where(OWNER_ID, '==', uid))
   const chatsSnapshot = await getDocs(chatsQuery)
   const chats = chatsSnapshot.docs.map((doc) => doc.data())
 
-  return chats
+  return z.array(ChatSchema).parse(chats)
+}
+
+export async function getChatById(id: string): Promise<Chat> {
+  const { firebaseDb } = getServerFirebase()
+
+  const chatRef = doc(
+    firebaseDb,
+    `${CHATS_COLLECTION}/${id}`
+  ) as DocumentReference<Chat>
+  const chatSnapshot = await getDoc(chatRef)
+  const chat = chatSnapshot.data()
+
+  if (!chat) {
+    throw new Error('Chat not found')
+  }
+
+  return ChatSchema.parse(chat)
+}
+
+export async function getParticipantsWithChatId(
+  chatId: string
+): Promise<Array<Participant>> {
+  const { firebaseDb } = getServerFirebase()
+
+  const participantsRef = collection(
+    firebaseDb,
+    `${CHATS_COLLECTION}/${chatId}/${PARTICIPANTS_COLLECTION}`
+  ) as CollectionReference<Participant>
+
+  const participantsSnapshot = await getDocs(participantsRef)
+
+  const participants = participantsSnapshot.docs.map((doc) => doc.data())
+
+  return z.array(ParticipantSchema).parse(participants)
 }
