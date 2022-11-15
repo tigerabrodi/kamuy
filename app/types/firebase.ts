@@ -18,7 +18,7 @@ export type Timestamp = z.infer<typeof TimestampSchema>
 
 export const ChatSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  name: z.string(),
   ownerId: z.string(),
   createdAt: TimestampSchema,
   imageUrl: z.string(),
