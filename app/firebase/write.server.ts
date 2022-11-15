@@ -40,7 +40,7 @@ export async function createChatForUserWithId(userId: string): Promise<Chat> {
 
     const newChat: Chat = {
       id: v4(),
-      title: UNTITLED,
+      name: UNTITLED,
       ownerId: userId,
       imageUrl: '',
       createdAt: serverTimestamp() as unknown as Timestamp,
