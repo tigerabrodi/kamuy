@@ -8,7 +8,7 @@ beforeEach(() => {
   cy.clearCookies()
 })
 
-it('Should be able to sign up', () => {
+it('Should be able to create a chat, write messages and edit the chat.', () => {
   cy.visit('/')
 
   cy.login(newUser)
