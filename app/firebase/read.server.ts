@@ -9,6 +9,7 @@ import {
   CHATS_COLLECTION,
   OWNER_ID,
   PARTICIPANTS_COLLECTION,
+  USERS_COLLECTION,
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
@@ -17,7 +18,10 @@ import { ChatSchema, ParticipantSchema } from '~/types/firebase'
 export async function getUserWithUid(uid: string): Promise<User> {
   const { firebaseDb } = getServerFirebase()
 
-  const userDoc = doc(firebaseDb, `users/${uid}`) as DocumentReference<User>
+  const userDoc = doc(
+    firebaseDb,
+    `/${USERS_COLLECTION}/${uid}`
+  ) as DocumentReference<User>
   const userSnapshot = await getDoc(userDoc)
   const user = userSnapshot.data()
 
