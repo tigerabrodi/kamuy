@@ -17,7 +17,7 @@ export async function createUserWithUserData(user: User) {
   const { firebaseDb } = getServerFirebase()
   const userDoc = doc(
     firebaseDb,
-    `/users/${user.id}`
+    `/${USERS_COLLECTION}/${user.id}`
   ) as DocumentReference<User>
 
   await setDoc(userDoc, user)
