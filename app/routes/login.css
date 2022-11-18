@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
 .login h1 {
@@ -70,4 +71,11 @@
   padding: 10px 15px;
   box-shadow: var(--shadows-medium);
   margin-top: 50px;
+}
+
+.login__spinner {
+  position: absolute;
+  top: 5%;
+  left: 20%;
+  transform: translate(-50%, -50%);
 }

@@ -2,7 +2,7 @@ import type { ActionFunction, LinksFunction } from '@remix-run/node'
 
 import { json } from '@remix-run/node'
 import { redirect } from '@remix-run/node'
-import { Form } from '@remix-run/react'
+import { Form, useTransition } from '@remix-run/react'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -12,6 +12,7 @@ import { zfd } from 'zod-form-data'
 
 import styles from './login.css'
 
+import { Spinner } from '~/components/Spinner'
 import { createUserWithUserData, getServerFirebase } from '~/firebase'
 import { authCommitSession, authGetSession } from '~/sessions/auth.server'
 import {
@@ -40,8 +41,14 @@ export const links: LinksFunction = () => {
 }
 
 export default function Login() {
+  const transition = useTransition()
+
   return (
     <main className="login">
+      {transition.state === 'submitting' && (
+        <Spinner label="signing in" class="login__spinner" />
+      )}
+
       <h1>Sign In</h1>
       <p>
         If your account doesn’t exist, we'll create one, otherwise you just sign
