@@ -6,6 +6,8 @@ const SIGNED_UP_SUCCESS_MESSAGE = 'Signed up successfully!'
 const SOMETHING_WENT_WRONG_MESSAGE =
   'Something went wrong, please fill in the values again!'
 
+const SIGNING_IN = 'signing in'
+
 const existingUser: TestUser = {
   email: 'tiger@gmail.com',
   password: 'tiger123',
@@ -32,9 +34,14 @@ it('Should be able to sign up', () => {
 
   cy.findByRole('button', { name: 'Sign In' }).click()
 
+  cy.findByRole('alert', { name: SIGNING_IN }).should('be.visible')
+
   cy.findByRole('status')
     .findByText(SIGNED_UP_SUCCESS_MESSAGE)
     .should('be.visible')
+
+  cy.findByRole('heading', { name: 'Kamuy' }).should('be.visible')
+  cy.findByText('No chats yet.').should('be.visible')
 })
 
 it('Should be able to sign in', () => {
@@ -44,12 +51,13 @@ it('Should be able to sign in', () => {
 
   cy.findByRole('button', { name: 'Sign In' }).click()
 
+  cy.findByRole('alert', { name: SIGNING_IN }).should('be.visible')
+
   cy.findByRole('status')
     .findByText(SIGNED_IN_SUCCESS_MESSAGE)
     .should('be.visible')
-  cy.findByRole('heading', { name: 'Kamuy' }).should('be.visible')
+
   cy.findByText(existingUser.username).should('be.visible')
-  cy.findByText('No chats yet.').should('be.visible')
 })
 
 it('Should show error message when user tries to sign in with existing user but wrong password', () => {
@@ -58,6 +66,8 @@ it('Should show error message when user tries to sign in with existing user but 
   cy.login({ ...existingUser, password: 'wrong password' })
 
   cy.findByRole('button', { name: 'Sign In' }).click()
+
+  cy.findByRole('alert', { name: SIGNING_IN }).should('be.visible')
 
   cy.findByRole('status')
     .findByText(SOMETHING_WENT_WRONG_MESSAGE)
