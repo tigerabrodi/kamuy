@@ -4,6 +4,7 @@ const UNTITLED = 'Untitled'
 const TYPE_A_MESSAGE = 'type a message'
 const ENTER_CHAT_NAME = 'Enter chat name'
 const SEND_MESSAGE = 'Send message'
+const CHANGING_NAME = 'Changing name'
 
 const newUser = createNewUser()
 
@@ -27,6 +28,9 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
   cy.findByRole('link', { name: `Settings of ${UNTITLED} chat` }).should(
     'not.exist'
   )
+  cy.findByRole('link', { name: 'Settings of pending chat' }).should(
+    'be.visible'
+  )
   cy.findByText('...').should('be.visible')
 
   cy.findByLabelText(ENTER_CHAT_NAME).should('be.disabled')
@@ -44,10 +48,11 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
 
   cy.findByLabelText(TYPE_A_MESSAGE).should('be.visible')
   cy.findByRole('button', { name: SEND_MESSAGE }).should('be.visible')
+  cy.findByRole('alert', { name: CHANGING_NAME }).should('not.exist')
 
   // Change chat name
   cy.findByLabelText(ENTER_CHAT_NAME).clear().type(chat.name)
-  cy.findByRole('alert', { name: 'Changing name' }).should('be.visible')
+  cy.findByRole('alert', { name: CHANGING_NAME }).should('be.visible')
   cy.findByRole('link', { name: `${chat.name} chat` }).should('be.visible')
   cy.findByRole('link', { name: `Settings of ${chat.name} chat` }).should(
     'be.visible'
