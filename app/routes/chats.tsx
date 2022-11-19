@@ -1,4 +1,5 @@
 import type { DataFunctionArgs, LinksFunction } from '@remix-run/node'
+import type { CollectionReference } from 'firebase/firestore'
 import type { Chat } from '~/types/firebase'
 
 import { redirect } from '@remix-run/node'
@@ -10,6 +11,14 @@ import {
   useLoaderData,
   useTransition,
 } from '@remix-run/react'
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from 'firebase/firestore'
+import { useEffect, useState } from 'react'
 
 import { ChatDetailPlaceholder } from './chats.$chatId'
 import chatIdStyles from './chats.$chatId.css'
@@ -20,8 +29,10 @@ import {
   getUserWithUid,
   createChatForUserWithId,
 } from '~/firebase'
+import { CHATS_COLLECTION, CREATED_AT, OWNER_ID } from '~/firebase/constants'
 import { getServerFirebase } from '~/firebase/firebase.server'
 import { Plus, Search, DefaultChat } from '~/icons'
+import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN, INTENT } from '~/types'
 import { getCookie } from '~/utils/getCookie'
@@ -45,12 +56,12 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   try {
     const { uid } = await firebaseAdminAuth.verifySessionCookie(token)
 
-    const [user, userChats] = await Promise.all([
+    const [user, initialUserChats] = await Promise.all([
       getUserWithUid(uid),
       getChatsForUserWithUid(uid),
     ])
 
-    return json({ user, userChats })
+    return json({ user, initialUserChats })
   } catch (error) {
     throw json({ error: 'You are unauthenticated.' }, { status: 401 })
   }
@@ -61,12 +72,36 @@ function shouldShowDefaultChatImg(chat: Chat) {
 }
 
 export default function Chats() {
-  const { user, userChats } = useLoaderData<typeof loader>()
+  const { user, initialUserChats } = useLoaderData<typeof loader>()
   const transition = useTransition()
+  const firebaseContext = useFirebase()
+  const [userChats, setUserChats] = useState(initialUserChats)
 
   const isSubmittingCreateNewChat =
     transition.state === 'submitting' &&
     transition.submission.formData.get(INTENT) === CREATE_NEW_CHAT
+
+  useEffect(() => {
+    if (firebaseContext?.firebaseDb) {
+      const chatsRef = collection(
+        firebaseContext?.firebaseDb,
+        CHATS_COLLECTION
+      ) as CollectionReference<Chat>
+
+      const chatsQuery = query<Chat>(
+        chatsRef,
+        where(OWNER_ID, '==', user.id),
+        orderBy(CREATED_AT, 'desc')
+      )
+
+      const unsubscribe = onSnapshot(chatsQuery, (chatsSnapshot) => {
+        const chats = chatsSnapshot.docs.map((doc) => doc.data())
+        setUserChats(chats)
+      })
+
+      return unsubscribe
+    }
+  }, [firebaseContext?.firebaseDb, user.id])
 
   return (
     <main className="chats">

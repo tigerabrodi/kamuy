@@ -10,6 +10,7 @@ specifiers:
   '@remix-run/serve': ^1.7.4
   '@remix-run/vercel': ^1.7.4
   '@testing-library/cypress': ^8.0.3
+  '@types/lodash.debounce': ^4.0.7
   '@types/react': ^18.0.15
   '@types/react-dom': ^18.0.6
   '@types/uuid': ^8.3.4
@@ -23,6 +24,7 @@ specifiers:
   eslint-plugin-remix: ^1.0.1
   firebase: ^9.13.0
   firebase-admin: ^11.2.0
+  lodash.debounce: ^4.0.8
   react: ^17.0.2
   react-dom: ^17.0.2
   react-hot-toast: ^2.4.0
@@ -41,6 +43,7 @@ dependencies:
   '@vercel/node': 2.5.26
   firebase: 9.13.0
   firebase-admin: 11.2.0
+  lodash.debounce: 4.0.8
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   react-hot-toast: 2.4.0_sfoxds7t5ydpegc3knd667wn6m
@@ -55,6 +58,7 @@ devDependencies:
   '@remix-run/eslint-config': 1.7.4_ts4k3weu33jabogfqu2jygp6fi
   '@remix-run/serve': 1.7.4_sfoxds7t5ydpegc3knd667wn6m
   '@testing-library/cypress': 8.0.3_cypress@10.11.0
+  '@types/lodash.debounce': 4.0.7
   '@types/react': 18.0.24
   '@types/react-dom': 18.0.8
   '@types/uuid': 8.3.4
@@ -2651,6 +2655,16 @@ packages:
     resolution: {integrity: sha512-HZQYqbiFVWufzCwexrvh694SOim8z2d+xJl5UNamcvQFejLY/2YUtzXHYi3cHdI7PMlS8ejH2slRAOJQ32aNbA==}
     dev: false
     optional: true
+
+  /@types/lodash.debounce/4.0.7:
+    resolution: {integrity: sha512-X1T4wMZ+gT000M2/91SYj0d/7JfeNZ9PeeOldSNoE/lunLeQXKvkmIumI29IaKMotU/ln/McOIvgzZcQ/3TrSA==}
+    dependencies:
+      '@types/lodash': 4.14.189
+    dev: true
+
+  /@types/lodash/4.14.189:
+    resolution: {integrity: sha512-kb9/98N6X8gyME9Cf7YaqIMvYGnBSWqEci6tiettE6iJWH1XdJz/PO8LB0GtLCG7x8dU3KWhZT+lA1a35127tA==}
+    dev: true
 
   /@types/long/4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
@@ -7079,7 +7093,6 @@ packages:
 
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
-    dev: true
 
   /lodash.includes/4.3.0:
     resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}
