@@ -65,6 +65,11 @@ textarea:focus {
   outline: none;
 }
 
+input:disabled,
+button:disabled {
+  opacity: 0.5;
+}
+
 a:focus-visible,
 button:focus-visible {
   outline: 2px solid white;
