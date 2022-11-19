@@ -87,7 +87,7 @@
   width: 100%;
   border-top: 2px solid var(--colors-gray);
   margin-top: 10px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .chats__items-chats a {
