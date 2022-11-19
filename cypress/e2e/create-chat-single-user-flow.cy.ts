@@ -1,4 +1,4 @@
-import { createNewUser } from '../support/factory'
+import { createNewUser, createChat } from '../support/factory'
 
 const UNTITLED = 'Untitled'
 const TYPE_A_MESSAGE = 'type a message'
@@ -6,6 +6,8 @@ const ENTER_CHAT_NAME = 'Enter chat name'
 const SEND_MESSAGE = 'Send message'
 
 const newUser = createNewUser()
+
+const chat = createChat()
 
 beforeEach(() => {
   cy.clearCookies()
@@ -42,4 +44,12 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
 
   cy.findByLabelText(TYPE_A_MESSAGE).should('be.visible')
   cy.findByRole('button', { name: SEND_MESSAGE }).should('be.visible')
+
+  // Change chat name
+  cy.findByLabelText(ENTER_CHAT_NAME).clear().type(chat.name)
+  cy.findByRole('alert', { name: 'Changing name' }).should('be.visible')
+  cy.findByRole('link', { name: `${chat.name} chat` }).should('be.visible')
+  cy.findByRole('link', { name: `Settings of ${chat.name} chat` }).should(
+    'be.visible'
+  )
 })

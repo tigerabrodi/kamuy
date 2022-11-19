@@ -3,3 +3,7 @@ export type TestUser = {
   username: string
   password: string
 }
+
+export type Chat = {
+  name: string
+}
