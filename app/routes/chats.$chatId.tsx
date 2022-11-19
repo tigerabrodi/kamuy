@@ -66,7 +66,10 @@ export default function ChatDetail() {
   )
 
   useEffect(() => {
-    handleChatNameChange(chatName)
+    handleChatNameChange(chatName)?.catch((error) => {
+      console.error(error)
+      setChatNameChangeStatus('error')
+    })
   }, [chatName, handleChatNameChange])
 
   return (
