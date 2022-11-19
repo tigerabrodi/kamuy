@@ -17,7 +17,7 @@
   align-items: center;
 }
 
-.chat__header svg {
+.chat__header-default-image {
   grid-area: img;
   width: 50px;
   height: 50px;
@@ -30,20 +30,25 @@
   border-radius: 100%;
 }
 
-.chat__header input {
+.chat__header-input {
   grid-area: name;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.chat__header-input input {
   background-color: var(--colors-teal-800);
-  padding-left: 10px;
-  color: var(--colors-teal-200);
   font-weight: 500;
   font-size: calc(1rem * 16 / 16);
-  width: 100%;
+  color: var(--colors-teal-200);
   width: 70%;
   height: 34px;
   padding-left: 8px;
 }
 
-.chat__header input:focus {
+.chat__header-input input:focus {
   box-shadow: var(--shadows-medium);
 }
 
@@ -101,4 +106,9 @@
 .chat__form button svg {
   width: 24px;
   height: 24px;
+}
+
+.spinner {
+  width: 25px;
+  height: 25px;
 }

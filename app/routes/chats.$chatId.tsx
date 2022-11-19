@@ -1,15 +1,21 @@
 import type { DataFunctionArgs } from '@remix-run/node'
-import type { Chat } from '~/types/firebase'
+import type { Chat, Status } from '~/types/firebase'
 
 import { json } from '@remix-run/node'
 import { Form, Link, useLoaderData } from '@remix-run/react'
+import { doc, updateDoc } from 'firebase/firestore'
+import debounce from 'lodash.debounce'
+import { useCallback, useEffect, useState } from 'react'
 import { z } from 'zod'
 import { zx } from 'zodix'
 
 import { IS_NEWLY_CREATED } from './chats'
 
+import { Spinner } from '~/components/Spinner'
 import { getChatById, getParticipantsWithChatId } from '~/firebase'
+import { CHATS_COLLECTION } from '~/firebase/constants'
 import { DefaultChat, RightFeather, Setting } from '~/icons'
+import { useFirebase } from '~/providers/FirebaseProvider'
 
 const TYPE_A_MESSAGE = 'type a message'
 const ENTER_CHAT_NAME = 'Enter chat name'
@@ -36,27 +42,58 @@ function shouldShowDefaultChatImg(chat: Chat) {
 
 export default function ChatDetail() {
   const { chat, participants, isNewlyCreated } = useLoaderData<typeof loader>()
+  const firebaseContext = useFirebase()
+
+  const [chatName, setChatName] = useState(chat.name)
+  const [chatNameChangeStatus, setChatNameChangeStatus] =
+    useState<Status>('idle')
+
+  // useCallback is required for debounce to work
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleChatNameChange = useCallback(
+    debounce(async (chatName: string) => {
+      if (firebaseContext?.firebaseDb && chatName !== chat.name) {
+        setChatNameChangeStatus('loading')
+        const chatDoc = doc(
+          firebaseContext.firebaseDb,
+          `${CHATS_COLLECTION}/${chat.id}`
+        )
+        await updateDoc(chatDoc, { name: chatName })
+        setChatNameChangeStatus('success')
+      }
+    }, 500),
+    [firebaseContext]
+  )
+
+  useEffect(() => {
+    handleChatNameChange(chatName)
+  }, [chatName, handleChatNameChange])
 
   return (
     <div className="chat">
       <div className="chat__header">
         {shouldShowDefaultChatImg(chat) ? (
-          <DefaultChat />
+          <DefaultChat className="chat__header-default-image" />
         ) : (
           <img src={chat.imageUrl} alt="" />
         )}
 
-        <input
-          type="text"
-          id="title"
-          name="title"
-          placeholder={ENTER_CHAT_NAME}
-          aria-label={ENTER_CHAT_NAME}
-          defaultValue={chat.name}
-          autoFocus={isNewlyCreated}
-        />
-
-        <Link to={`./settings`} aria-label={`Settings of ${chat.name} chat`}>
+        <div className="chat__header-input">
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder={ENTER_CHAT_NAME}
+            aria-label={ENTER_CHAT_NAME}
+            autoFocus={isNewlyCreated}
+            value={chatName}
+            onChange={(event) => setChatName(event.target.value)}
+          />
+          {chatNameChangeStatus === 'loading' && (
+            <Spinner label="Changing name" />
+          )}
+        </div>
+        <Link to={`./settings`} aria-label={`Settings of ${chatName} chat`}>
           <Setting />
         </Link>
 
