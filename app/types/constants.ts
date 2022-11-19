@@ -16,3 +16,5 @@ export const ONE_MONTH = ONE_DAY * 30
 export const ONE_YEAR = ONE_DAY * 365
 
 export const FIVE_DAYS_IN_MILLISECONDS = 60 * 60 * 24 * 5 * 1000 // 5 days
+
+export const INTENT = 'intent'

@@ -1,6 +1,7 @@
 import type { CollectionReference, DocumentReference } from 'firebase/firestore'
 import type { Chat, Participant, User } from '~/types/firebase'
 
+import { orderBy } from 'firebase/firestore'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
 import { z } from 'zod'
@@ -10,6 +11,7 @@ import {
   OWNER_ID,
   PARTICIPANTS_COLLECTION,
   USERS_COLLECTION,
+  CREATED_AT,
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
@@ -41,7 +43,11 @@ export async function getChatsForUserWithUid(
     firebaseDb,
     CHATS_COLLECTION
   ) as CollectionReference<Chat>
-  const chatsQuery = query<Chat>(chatsRef, where(OWNER_ID, '==', uid))
+  const chatsQuery = query<Chat>(
+    chatsRef,
+    where(OWNER_ID, '==', uid),
+    orderBy(CREATED_AT, 'desc')
+  )
   const chatsSnapshot = await getDocs(chatsQuery)
   const chats = chatsSnapshot.docs.map((doc) => doc.data())
 

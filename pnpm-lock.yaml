@@ -31,6 +31,7 @@ specifiers:
   uuid: ^9.0.0
   zod: ^3.19.1
   zod-form-data: ^1.2.2
+  zodix: ^0.3.2
 
 dependencies:
   '@fontsource/overpass': 4.5.10
@@ -46,6 +47,7 @@ dependencies:
   uuid: 9.0.0
   zod: 3.19.1
   zod-form-data: 1.2.2_zod@3.19.1
+  zodix: 0.3.2_zod@3.19.1
 
 devDependencies:
   '@faker-js/faker': 7.6.0
@@ -10158,6 +10160,15 @@ packages:
 
   /zod/3.19.1:
     resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==}
+    dev: false
+
+  /zodix/0.3.2_zod@3.19.1:
+    resolution: {integrity: sha512-iVT1QXLNrUo0QNkmWRitm1KdR8XgLLzqrLGUzooD/iXJfdlAnIYssfz1eniXN9KPJkCS2Qyu7y2RMLDns4xksQ==}
+    peerDependencies:
+      '@remix-run/server-runtime': 1.x
+      zod: 3.x
+    dependencies:
+      zod: 3.19.1
     dev: false
 
   /zwitch/2.0.2:
