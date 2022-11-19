@@ -1,6 +1,11 @@
-export function DefaultChat() {
+export function DefaultChat(props: { className?: string }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 166 171">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 166 171"
+      className={props.className}
+    >
       <path
         fill="#075E54"
         d="M82.762 0c45.706 0 82.76 38.19 82.76 85.298 0 47.109-37.054 85.299-82.76 85.299C37.052 170.597 0 132.407 0 85.298 0 38.19 37.053 0 82.762 0Z"

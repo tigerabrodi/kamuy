@@ -1,4 +1,4 @@
-export function Spinner(props: { class: string; label: string }) {
+export function Spinner(props: { class?: string; label: string }) {
   return (
     <div
       className={`spinner ${props.class}`}
