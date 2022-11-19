@@ -142,7 +142,6 @@ export const action: ActionFunction = async ({ request }) => {
       ],
     })
   } catch (error) {
-    console.log(error)
     try {
       const { user } = await createUserWithEmailAndPassword(
         firebaseAuth,
