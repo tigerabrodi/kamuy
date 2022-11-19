@@ -34,3 +34,16 @@ export const ParticipantSchema = z.object({
 })
 
 export type Participant = z.infer<typeof ParticipantSchema>
+
+export const FirebaseOptionsSchema = z.object({
+  apiKey: z.string().optional(),
+  authDomain: z.string().optional(),
+  databaseURL: z.string().optional(),
+  projectId: z.string().optional(),
+  storageBucket: z.string().optional(),
+  messagingSenderId: z.string().optional(),
+  appId: z.string().optional(),
+  measurementId: z.string().optional(),
+})
+
+export type Status = 'idle' | 'loading' | 'success' | 'error'

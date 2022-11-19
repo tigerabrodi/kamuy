@@ -22,6 +22,7 @@ import { z } from 'zod'
 
 import { Navigation, navigationStyles } from './components'
 import { getServerFirebase } from './firebase/firebase.server'
+import { FirebaseProvider } from './providers/FirebaseProvider'
 import styles from './root.css'
 import { authGetSession } from './sessions/auth.server'
 import {
@@ -34,6 +35,7 @@ import {
   VALIDATION_STATE_ERROR,
   VALIDATION_STATE_SUCCESS,
 } from './types'
+import { FirebaseOptionsSchema } from './types/firebase'
 import { getCookie } from './utils/getCookie'
 
 function getValidationTexts(validationSession: Session) {
@@ -66,7 +68,9 @@ export const links: LinksFunction = () => {
 }
 
 export const loader = async ({ request }: DataFunctionArgs) => {
-  const { firebaseAdminAuth } = getServerFirebase()
+  const { firebaseAdminAuth, firebaseDb } = getServerFirebase()
+
+  const options = FirebaseOptionsSchema.parse(firebaseDb.app.options)
 
   const validationSession = await validationGetSession(getCookie(request))
   const validationTextsData = getValidationTexts(validationSession)
@@ -84,18 +88,25 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   }
 
   try {
-    await firebaseAdminAuth.verifySessionCookie(token)
+    const decodedToken = await firebaseAdminAuth.verifySessionCookie(token)
     const isInsideChatRoutes = pathname.startsWith('/chats')
 
+    const userToken = await firebaseAdminAuth.createCustomToken(
+      decodedToken.uid
+    )
+
     if (isInsideChatRoutes) {
-      return json({ ...validationTextsData }, sessionHeaders)
+      return json(
+        { ...validationTextsData, firebase: { options, userToken } },
+        sessionHeaders
+      )
     } else {
       return redirect('/chats', sessionHeaders)
     }
   } catch (error) {
     const isOnLoginPage = pathname === '/login'
     if (isOnLoginPage) {
-      return json(validationTextsData, sessionHeaders)
+      return json({ ...validationTextsData, firebase: null }, sessionHeaders)
     } else {
       return redirect('/login', sessionHeaders)
     }
@@ -105,7 +116,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 export default function App() {
   const loaderData = useLoaderData<typeof loader>()
 
-  const { validationSessionErrorText, validationSessionSuccessText } =
+  const { validationSessionErrorText, validationSessionSuccessText, firebase } =
     loaderData
 
   useEffect(() => {
@@ -127,12 +138,14 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Toaster position="top-center" toastOptions={{ duration: 500 }} />
-        <Navigation />
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
+        <FirebaseProvider firebase={firebase}>
+          <Toaster position="top-center" toastOptions={{ duration: 500 }} />
+          <Navigation />
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </FirebaseProvider>
       </body>
     </html>
   )
