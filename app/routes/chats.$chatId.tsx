@@ -143,6 +143,10 @@ export default function ChatDetail() {
         </p>
       </div>
 
+      <div className="chat__chats">
+        <div />
+      </div>
+
       <Form className="chat__form">
         <input
           type="text"
@@ -187,6 +191,10 @@ export function ChatDetailPlaceholder() {
         </Link>
 
         <p>...</p>
+      </div>
+
+      <div className="chat__chats">
+        <div />
       </div>
 
       <Form className="chat__form">
