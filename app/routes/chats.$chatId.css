@@ -82,10 +82,11 @@
 .chat__form {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
   height: 60px;
   padding: 0 40px;
+  column-gap: 80px;
 }
 
 .chat__form input {
