@@ -12,25 +12,52 @@ import { zx } from 'zodix'
 import { IS_NEWLY_CREATED } from './chats'
 
 import { Spinner } from '~/components/Spinner'
-import { getChatById, getParticipantsWithChatId } from '~/firebase'
+import {
+  getChatById,
+  getParticipantsWithChatId,
+  getServerFirebase,
+} from '~/firebase'
 import { CHATS_COLLECTION } from '~/firebase/constants'
+import { useGetChatWithInitialChatSubscription } from '~/hooks'
 import { DefaultChat, RightFeather, Setting } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
+import { authGetSession } from '~/sessions/auth.server'
+import { ACCESS_TOKEN } from '~/types'
+import { getCookie } from '~/utils/getCookie'
 
 const TYPE_A_MESSAGE = 'type a message'
 const ENTER_CHAT_NAME = 'Enter chat name'
 
 export const loader = async ({ params, request }: DataFunctionArgs) => {
+  const { firebaseAdminAuth } = getServerFirebase()
   const { chatId } = zx.parseParams(params, { chatId: z.string() })
   const { isNewlyCreated } = zx.parseQuery(request, {
     [IS_NEWLY_CREATED]: zx.BoolAsString.optional(),
   })
 
-  const chat = await getChatById(chatId)
+  const authSession = await authGetSession(getCookie(request))
+  const token = authSession.get(ACCESS_TOKEN)
+
+  const decodedToken = await firebaseAdminAuth.verifySessionCookie(token)
+
+  const initialChat = await getChatById(chatId)
   const participants = await getParticipantsWithChatId(chatId)
 
+  const isUserAParticipantOfChat = participants.some(
+    (participant) => participant.id === decodedToken.uid
+  )
+
+  console.log(participants, decodedToken.uid, isUserAParticipantOfChat)
+
+  if (!isUserAParticipantOfChat) {
+    throw json(
+      { message: "You're not a participant in this chat." },
+      { status: 403 }
+    )
+  }
+
   return json({
-    chat,
+    initialChat,
     participants,
     isNewlyCreated,
   })
@@ -41,10 +68,13 @@ function shouldShowDefaultChatImg(chat: Chat) {
 }
 
 export default function ChatDetail() {
-  const { chat, participants, isNewlyCreated } = useLoaderData<typeof loader>()
+  const { initialChat, participants, isNewlyCreated } =
+    useLoaderData<typeof loader>()
   const firebaseContext = useFirebase()
 
-  const [chatName, setChatName] = useState(chat.name)
+  const { chat, setChat } = useGetChatWithInitialChatSubscription({
+    initialChat,
+  })
   const [chatNameChangeStatus, setChatNameChangeStatus] =
     useState<Status>('idle')
 
@@ -66,11 +96,11 @@ export default function ChatDetail() {
   )
 
   useEffect(() => {
-    handleChatNameChange(chatName)?.catch((error) => {
+    handleChatNameChange(chat.name)?.catch((error) => {
       console.error(error)
       setChatNameChangeStatus('error')
     })
-  }, [chatName, handleChatNameChange])
+  }, [chat.name, handleChatNameChange])
 
   return (
     <div className="chat">
@@ -89,14 +119,20 @@ export default function ChatDetail() {
             placeholder={ENTER_CHAT_NAME}
             aria-label={ENTER_CHAT_NAME}
             autoFocus={isNewlyCreated}
-            value={chatName}
-            onChange={(event) => setChatName(event.target.value)}
+            value={chat.name}
+            onChange={(event) =>
+              setChat((prevChat) => ({ ...prevChat, name: event.target.value }))
+            }
           />
           {chatNameChangeStatus === 'loading' && (
             <Spinner label="Changing name" />
           )}
         </div>
-        <Link to={`./settings`} aria-label={`Settings of ${chatName} chat`}>
+        <Link
+          to={`./settings`}
+          aria-label={`Settings of ${chat.name} chat`}
+          prefetch="intent"
+        >
           <Setting />
         </Link>
 
@@ -128,21 +164,24 @@ export function ChatDetailPlaceholder() {
   return (
     <div className="chat">
       <div className="chat__header">
-        <DefaultChat />
+        <DefaultChat className="chat__header-default-image" />
 
-        <input
-          type="text"
-          id="title"
-          name="title"
-          placeholder={ENTER_CHAT_NAME}
-          aria-label={ENTER_CHAT_NAME}
-          disabled
-        />
+        <div className="chat__header-input">
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder={ENTER_CHAT_NAME}
+            aria-label={ENTER_CHAT_NAME}
+            disabled
+          />
+        </div>
 
         <Link
           to={`./settings`}
           aria-label="Settings of pending chat"
           style={{ pointerEvents: 'none' }}
+          prefetch="intent"
         >
           <Setting />
         </Link>
