@@ -21,7 +21,7 @@ import {
   createChatForUserWithId,
 } from '~/firebase'
 import { getServerFirebase } from '~/firebase/firebase.server'
-import { useGetChatsForUserRealtime } from '~/hooks/useGetChatsForUserRealtime'
+import { useGetChatsForUserSubscription } from '~/hooks'
 import { Plus, Search, DefaultChat } from '~/icons'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN, INTENT } from '~/types'
@@ -65,7 +65,7 @@ export default function Chats() {
   const { user, initialUserChats } = useLoaderData<typeof loader>()
   const transition = useTransition()
 
-  const { userChats } = useGetChatsForUserRealtime({
+  const { userChats } = useGetChatsForUserSubscription({
     user: user as User,
     initialUserChats,
   })
@@ -109,6 +109,7 @@ export default function Chats() {
                 key={chat.id}
                 to={`/chats/${chat.id}`}
                 aria-label={`${chat.name} chat`}
+                prefetch="intent"
               >
                 {shouldShowDefaultChatImg(chat) ? (
                   <DefaultChat />

@@ -10,10 +10,14 @@ import {
 } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 
-import { CHATS_COLLECTION, CREATED_AT, OWNER_ID } from '~/firebase/constants'
+import {
+  CHATS_COLLECTION,
+  CREATED_AT,
+  PARTICIPANT_IDS,
+} from '~/firebase/constants'
 import { useFirebase } from '~/providers/FirebaseProvider'
 
-export function useGetChatsForUserRealtime({
+export function useGetChatsForUserSubscription({
   user,
   initialUserChats,
 }: {
@@ -32,7 +36,7 @@ export function useGetChatsForUserRealtime({
 
       const chatsQuery = query<Chat>(
         chatsRef,
-        where(OWNER_ID, '==', user.id),
+        where(PARTICIPANT_IDS, 'array-contains', user.id),
         orderBy(CREATED_AT, 'desc')
       )
 
