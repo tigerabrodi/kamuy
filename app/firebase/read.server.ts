@@ -8,10 +8,10 @@ import { z } from 'zod'
 
 import {
   CHATS_COLLECTION,
-  OWNER_ID,
   PARTICIPANTS_COLLECTION,
   USERS_COLLECTION,
   CREATED_AT,
+  PARTICIPANT_IDS,
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
@@ -45,7 +45,7 @@ export async function getChatsForUserWithUid(
   ) as CollectionReference<Chat>
   const chatsQuery = query<Chat>(
     chatsRef,
-    where(OWNER_ID, '==', uid),
+    where(PARTICIPANT_IDS, 'array-contains', uid),
     orderBy(CREATED_AT, 'desc')
   )
   const chatsSnapshot = await getDocs(chatsQuery)

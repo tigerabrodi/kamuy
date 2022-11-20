@@ -2,6 +2,8 @@ import type { DocumentReference } from 'firebase/firestore'
 
 import { z } from 'zod'
 
+import { CREATED_AT, OWNER_ID, PARTICIPANT_IDS } from '~/firebase/constants'
+
 export type User = {
   email: string
   username: string
@@ -19,9 +21,10 @@ export type Timestamp = z.infer<typeof TimestampSchema>
 export const ChatSchema = z.object({
   id: z.string(),
   name: z.string(),
-  ownerId: z.string(),
-  createdAt: TimestampSchema,
+  [OWNER_ID]: z.string(),
+  [CREATED_AT]: TimestampSchema,
   imageUrl: z.string(),
+  [PARTICIPANT_IDS]: z.array(z.string()),
 })
 
 export type Chat = z.infer<typeof ChatSchema>

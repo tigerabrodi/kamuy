@@ -44,11 +44,12 @@ export async function createChatForUserWithId(userId: string): Promise<Chat> {
       ownerId: userId,
       imageUrl: '',
       createdAt: serverTimestamp() as unknown as Timestamp,
+      participantIds: [userId],
     }
     const chatDoc = doc(firebaseDb, `/${CHATS_COLLECTION}/${newChat.id}`)
 
     const participant: Participant = {
-      id: v4(),
+      id: userId,
       username: user.username,
       email: user.email,
       addedAt: serverTimestamp() as unknown as Timestamp,
