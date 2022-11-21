@@ -2,7 +2,7 @@ import type { DataFunctionArgs } from '@remix-run/node'
 import type { Chat, Status } from '~/types/firebase'
 
 import { json } from '@remix-run/node'
-import { Form, Link, useLoaderData } from '@remix-run/react'
+import { Form, Link, Outlet, useLoaderData } from '@remix-run/react'
 import { doc, updateDoc } from 'firebase/firestore'
 import debounce from 'lodash.debounce'
 import { useCallback, useEffect, useState } from 'react'
@@ -18,7 +18,7 @@ import {
   getServerFirebase,
 } from '~/firebase'
 import { CHATS_COLLECTION } from '~/firebase/constants'
-import { useGetChatWithInitialChatSubscription } from '~/hooks'
+import { useGetChatSubscription, useGetParticipantsSubscription } from '~/hooks'
 import { DefaultChat, RightFeather, Setting } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
@@ -40,14 +40,14 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
 
   const decodedToken = await firebaseAdminAuth.verifySessionCookie(token)
 
-  const initialChat = await getChatById(chatId)
-  const participants = await getParticipantsWithChatId(chatId)
+  const [initialChat, initialParticipants] = await Promise.all([
+    getChatById(chatId),
+    getParticipantsWithChatId(chatId),
+  ])
 
-  const isUserAParticipantOfChat = participants.some(
+  const isUserAParticipantOfChat = initialParticipants.some(
     (participant) => participant.id === decodedToken.uid
   )
-
-  console.log(participants, decodedToken.uid, isUserAParticipantOfChat)
 
   if (!isUserAParticipantOfChat) {
     throw json(
@@ -58,7 +58,7 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
 
   return json({
     initialChat,
-    participants,
+    initialParticipants,
     isNewlyCreated,
   })
 }
@@ -68,13 +68,19 @@ function shouldShowDefaultChatImg(chat: Chat) {
 }
 
 export default function ChatDetail() {
-  const { initialChat, participants, isNewlyCreated } =
+  const { initialChat, initialParticipants, isNewlyCreated } =
     useLoaderData<typeof loader>()
   const firebaseContext = useFirebase()
 
-  const { chat, setChat } = useGetChatWithInitialChatSubscription({
+  const { chat, setChat } = useGetChatSubscription({
     initialChat,
   })
+
+  const { participants } = useGetParticipantsSubscription({
+    initialParticipants,
+    chat,
+  })
+
   const [chatNameChangeStatus, setChatNameChangeStatus] =
     useState<Status>('idle')
 
@@ -103,64 +109,70 @@ export default function ChatDetail() {
   }, [chat.name, handleChatNameChange])
 
   return (
-    <div className="chat">
-      <div className="chat__header">
-        {shouldShowDefaultChatImg(chat) ? (
-          <DefaultChat className="chat__header-default-image" />
-        ) : (
-          <img src={chat.imageUrl} alt="" />
-        )}
+    <>
+      <div className="chat">
+        <div className="chat__header">
+          {shouldShowDefaultChatImg(chat) ? (
+            <DefaultChat className="chat__header-default-image" />
+          ) : (
+            <img src={chat.imageUrl} alt="" />
+          )}
 
-        <div className="chat__header-input">
+          <div className="chat__header-input">
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder={ENTER_CHAT_NAME}
+              aria-label={ENTER_CHAT_NAME}
+              autoFocus={isNewlyCreated}
+              value={chat.name}
+              onChange={(event) =>
+                setChat((prevChat) => ({
+                  ...prevChat,
+                  name: event.target.value,
+                }))
+              }
+            />
+            {chatNameChangeStatus === 'loading' && (
+              <Spinner label="Changing name" />
+            )}
+          </div>
+          <Link
+            to={`./settings`}
+            aria-label={`Settings of ${chat.name} chat`}
+            prefetch="intent"
+          >
+            <Setting />
+          </Link>
+
+          <p>
+            {participants.map((participant) => (
+              <span key={participant.id}>{participant.username},</span>
+            ))}
+          </p>
+        </div>
+
+        <div className="chat__chats">
+          <div />
+        </div>
+
+        <Form className="chat__form">
           <input
             type="text"
-            id="title"
-            name="title"
-            placeholder={ENTER_CHAT_NAME}
-            aria-label={ENTER_CHAT_NAME}
-            autoFocus={isNewlyCreated}
-            value={chat.name}
-            onChange={(event) =>
-              setChat((prevChat) => ({ ...prevChat, name: event.target.value }))
-            }
+            id="message"
+            name="message"
+            aria-label={TYPE_A_MESSAGE}
+            placeholder={TYPE_A_MESSAGE}
           />
-          {chatNameChangeStatus === 'loading' && (
-            <Spinner label="Changing name" />
-          )}
-        </div>
-        <Link
-          to={`./settings`}
-          aria-label={`Settings of ${chat.name} chat`}
-          prefetch="intent"
-        >
-          <Setting />
-        </Link>
 
-        <p>
-          {participants.map((participant) => (
-            <span key={participant.id}>{participant.username},</span>
-          ))}
-        </p>
+          <button type="submit" aria-label="Send message">
+            <RightFeather />
+          </button>
+        </Form>
       </div>
-
-      <div className="chat__chats">
-        <div />
-      </div>
-
-      <Form className="chat__form">
-        <input
-          type="text"
-          id="message"
-          name="message"
-          aria-label={TYPE_A_MESSAGE}
-          placeholder={TYPE_A_MESSAGE}
-        />
-
-        <button type="submit" aria-label="Send message">
-          <RightFeather />
-        </button>
-      </Form>
-    </div>
+      <Outlet />
+    </>
   )
 }
 

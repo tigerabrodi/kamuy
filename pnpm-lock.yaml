@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@faker-js/faker': ^7.6.0
   '@fontsource/overpass': ^4.5.10
+  '@headlessui/react': ^1.7.4
   '@remix-run/dev': ^1.7.4
   '@remix-run/eslint-config': ^1.7.4
   '@remix-run/node': ^1.7.4
@@ -37,6 +38,7 @@ specifiers:
 
 dependencies:
   '@fontsource/overpass': 4.5.10
+  '@headlessui/react': 1.7.4_sfoxds7t5ydpegc3knd667wn6m
   '@remix-run/node': 1.7.4_sfoxds7t5ydpegc3knd667wn6m
   '@remix-run/react': 1.7.4_sfoxds7t5ydpegc3knd667wn6m
   '@remix-run/vercel': 1.7.4_jcovpxw5ee36jxxbnsvyokxk2y
@@ -2090,6 +2092,18 @@ packages:
       yargs: 16.2.0
     dev: false
 
+  /@headlessui/react/1.7.4_sfoxds7t5ydpegc3knd667wn6m:
+    resolution: {integrity: sha512-D8n5yGCF3WIkPsjEYeM8knn9jQ70bigGGb5aUvN6y4BGxcT3OcOQOKcM3zRGllRCZCFxCZyQvYJF6ZE7bQUOyQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+    dependencies:
+      client-only: 0.0.1
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+    dev: false
+
   /@humanwhocodes/config-array/0.11.7:
     resolution: {integrity: sha512-kBbPWzN8oVMLb0hOUYXhmxggL/1cJE6ydvjDIGi9EnAGUyA7cLVKQg+d/Dsm+KZwx2czGHrCmMVLiyg8s5JPKw==}
     engines: {node: '>=10.10.0'}
@@ -3680,6 +3694,10 @@ packages:
     resolution: {integrity: sha512-FxqpkPPwu1HjuN93Omfm4h8uIanXofW0RxVEW3k5RKx+mJJYSthzNhp32Kzxxy3YAEZ/Dc/EWN1vZRY0+kOhbw==}
     engines: {node: '>= 10'}
     dev: true
+
+  /client-only/0.0.1:
+    resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
+    dev: false
 
   /cliui/7.0.4:
     resolution: {integrity: sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==}
