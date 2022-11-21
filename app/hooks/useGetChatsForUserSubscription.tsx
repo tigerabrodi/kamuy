@@ -29,20 +29,20 @@ export function useGetChatsForUserSubscription({
 
   useEffect(() => {
     if (firebaseContext?.firebaseDb) {
-      const chatsRef = collection(
+      const chatsCollectionRef = collection(
         firebaseContext?.firebaseDb,
         CHATS_COLLECTION
       ) as CollectionReference<Chat>
 
       const chatsQuery = query<Chat>(
-        chatsRef,
+        chatsCollectionRef,
         where(PARTICIPANT_IDS, 'array-contains', user.id),
         orderBy(CREATED_AT, 'desc')
       )
 
       const unsubscribe = onSnapshot(chatsQuery, (chatsSnapshot) => {
-        const chats = chatsSnapshot.docs.map((doc) => doc.data())
-        setUserChats(chats)
+        const newChats = chatsSnapshot.docs.map((doc) => doc.data())
+        setUserChats(newChats)
       })
 
       return unsubscribe
