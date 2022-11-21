@@ -9,24 +9,20 @@ import { CHATS_COLLECTION } from '~/firebase/constants'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { ChatSchema } from '~/types/firebase'
 
-export function useGetChatWithInitialChatSubscription({
-  initialChat,
-}: {
-  initialChat: Chat
-}) {
+export function useGetChatSubscription({ initialChat }: { initialChat: Chat }) {
   const firebaseContext = useFirebase()
   const [chat, setChat] = useState(initialChat)
 
   useEffect(() => {
     if (firebaseContext?.firebaseDb) {
-      const chatRef = doc(
+      const chatDocRef = doc(
         firebaseContext?.firebaseDb,
         `${CHATS_COLLECTION}/${chat.id}`
       ) as DocumentReference<Chat>
 
-      const unsubscribe = onSnapshot(chatRef, (chatSnapshot) => {
-        const chatData = chatSnapshot.data()
-        setChat(ChatSchema.parse(chatData))
+      const unsubscribe = onSnapshot(chatDocRef, (chatSnapshot) => {
+        const newChat = chatSnapshot.data()
+        setChat(ChatSchema.parse(newChat))
       })
 
       return unsubscribe
