@@ -54,7 +54,34 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
   cy.findByLabelText(ENTER_CHAT_NAME).clear().type(chat.name)
   cy.findByRole('alert', { name: CHANGING_NAME }).should('be.visible')
   cy.findByRole('link', { name: `${chat.name} chat` }).should('be.visible')
-  cy.findByRole('link', { name: `Settings of ${chat.name} chat` }).should(
-    'be.visible'
-  )
+
+  // Open chat settings and assert UI
+  cy.findByRole('link', { name: `Settings of ${chat.name} chat` }).click()
+  cy.findByRole('dialog', { name: 'Settings' }).within(() => {
+    cy.findByRole('heading', { name: 'Settings', level: 1 }).should(
+      'be.visible'
+    )
+    cy.findByRole('link', { name: 'Close' }).should('be.visible')
+
+    cy.findByRole('button', { name: 'Delete chat' }).should('be.visible')
+    cy.findByRole('img').should('not.exist')
+    cy.findByRole('heading', { name: chat.name, level: 2 }).should('be.visible')
+
+    cy.findByText('1 participants').should('be.visible')
+    cy.findByRole('heading', { name: 'Participants', level: 3 }).should(
+      'be.visible'
+    )
+
+    cy.findByRole('link', { name: 'Add new participant' }).should('be.visible')
+    cy.findByRole('listitem').within(() => {
+      cy.findByRole('heading', { name: newUser.username, level: 4 }).should(
+        'be.visible'
+      )
+      cy.findByText(newUser.email).should('be.visible')
+
+      cy.findByRole('button', {
+        name: `Remove participant ${newUser.username}`,
+      }).should('be.visible')
+    })
+  })
 })
