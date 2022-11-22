@@ -64,7 +64,7 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
     cy.findByRole('link', { name: 'Close' }).should('be.visible')
 
     cy.findByRole('button', { name: 'Delete chat' }).should('be.visible')
-    cy.findByRole('img').should('not.exist')
+    cy.findByLabelText('Upload image').findByRole('img').should('not.exist')
     cy.findByRole('heading', { name: chat.name, level: 2 }).should('be.visible')
 
     cy.findByText('1 participants').should('be.visible')
