@@ -5,6 +5,8 @@ const TYPE_A_MESSAGE = 'type a message'
 const ENTER_CHAT_NAME = 'Enter chat name'
 const SEND_MESSAGE = 'Send message'
 const CHANGING_NAME = 'Changing name'
+const UPLOAD_IMAGE = 'Upload image'
+const DEMO_AVATAR = 'demo-avatar.webp'
 
 const newUser = createNewUser()
 
@@ -64,7 +66,7 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
     cy.findByRole('link', { name: 'Close' }).should('be.visible')
 
     cy.findByRole('button', { name: 'Delete chat' }).should('be.visible')
-    cy.findByLabelText('Upload image').findByRole('img').should('not.exist')
+    cy.findByLabelText(UPLOAD_IMAGE).findByRole('img').should('not.exist')
     cy.findByRole('heading', { name: chat.name, level: 2 }).should('be.visible')
 
     cy.findByText('1 participants').should('be.visible')
@@ -82,7 +84,12 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
 
       cy.findByRole('button', {
         name: `Remove participant ${newUser.username}`,
-      }).should('be.visible')
+      }).should('be.disabled')
     })
+
+    cy.get('img').should('not.exist')
+    cy.findByLabelText(UPLOAD_IMAGE).attachFile(DEMO_AVATAR)
+    cy.findByRole('alert', { name: 'uploading image' }).should('be.visible')
+    cy.get('img').should('be.visible')
   })
 })
