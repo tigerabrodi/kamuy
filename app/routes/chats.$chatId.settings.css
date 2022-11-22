@@ -18,3 +18,140 @@
   height: 100%;
   width: 40%;
 }
+
+.settings__panel-header {
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  width: 100%;
+  background-color: var(--colors-gray);
+}
+
+.settings__panel-header a {
+  width: 24px;
+  height: 24px;
+}
+
+.settings__panel-header h1 {
+  font-weight: 400;
+  font-size: calc(1rem * 16 / 16);
+  color: var(--colors-teal-600);
+}
+
+.settings__panel-header form {
+  margin-left: auto;
+}
+
+.settings__panel-header button {
+  width: 28px;
+  height: 28px;
+}
+
+.settings__panel-main {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 20px;
+  width: 100%;
+  row-gap: 15px;
+}
+
+.settings__panel-main input:focus-visible + label {
+  outline: 2px solid white;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px black !important;
+}
+
+.settings__panel-main label {
+  cursor: pointer;
+}
+
+.settings__panel-main svg {
+  width: 165px;
+}
+
+.settings__panel-main h2 {
+  font-size: calc(1rem * 20 / 16);
+  font-weight: 700;
+  color: var(--colors-black);
+}
+
+.settings__panel-main p {
+  font-weight: 400;
+  font-size: calc(1rem * 20 / 16);
+  color: var(--colors-black);
+}
+
+.settings__panel-participants {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 15px;
+  position: relative;
+  width: 100%;
+  padding: 0 17px;
+  margin-top: 15px;
+}
+
+.settings__panel-participants a {
+  background-color: var(--colors-teal-600);
+  border-radius: 2px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadows-medium);
+  position: absolute;
+  top: 2.5px;
+  right: 17px;
+}
+
+.settings__panel-participants a svg {
+  width: 16px;
+  height: 16px;
+}
+
+.settings__panel-participants h3 {
+  font-weight: 700;
+  font-size: calc(1rem * 24 / 16);
+  color: var(--colors-black);
+}
+
+.settings__panel-participants ul {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 15px;
+  width: 100%;
+}
+
+.settings__panel-participants li {
+  display: grid;
+  width: 100%;
+  height: 60px;
+  background-color: var(--colors-teal-200);
+  box-shadow: var(--shadows-inner);
+  grid-template-areas: 'heading form' 'email form';
+  align-items: center;
+  padding: 7px 12px;
+}
+
+.settings__panel-participants li h4 {
+  grid-area: heading;
+}
+
+.settings__panel-participants li p {
+  grid-area: email;
+}
+
+.settings__panel-participants li form {
+  grid-area: form;
+  justify-self: end;
+}
+
+.settings__panel-participants li form button {
+  width: 22px;
+  height: 22px;
+}
