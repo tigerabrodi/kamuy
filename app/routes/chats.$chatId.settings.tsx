@@ -1,11 +1,19 @@
+import type { ContextType } from './chats.$chatId'
 import type { LinksFunction } from '@remix-run/node'
 
 import { Dialog } from '@headlessui/react'
-import { Form, Link, useFetcher, useNavigate } from '@remix-run/react'
+import {
+  Form,
+  Link,
+  useFetcher,
+  useNavigate,
+  useOutletContext,
+} from '@remix-run/react'
 
 import styles from './chats.$chatId.settings.css'
 
 import { Close, DefaultChat, Delete, Plus } from '~/icons'
+import { shouldShowDefaultChatImg } from '~/utils'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -18,6 +26,8 @@ const PARTICIPANT_INPUT_NAME = 'participantId'
 export default function Settings() {
   const navigate = useNavigate()
   const fetcher = useFetcher()
+
+  const { chat, participants } = useOutletContext<ContextType>()
 
   return (
     <Dialog
@@ -43,13 +53,17 @@ export default function Settings() {
           <input type="file" className="sr-only" id="image" accept="image/*" />
 
           <label htmlFor="image">
-            <DefaultChat />
+            {shouldShowDefaultChatImg(chat) ? (
+              <DefaultChat />
+            ) : (
+              <img src={chat.imageUrl} alt="" />
+            )}
             <span className="sr-only">Upload image</span>
           </label>
 
-          <h2>Untitled</h2>
+          <h2>{chat.name}</h2>
 
-          <p>11 participants</p>
+          <p>{participants.length} participants</p>
         </div>
 
         <div className="settings__panel-participants">
@@ -59,22 +73,24 @@ export default function Settings() {
           </Link>
 
           <ul>
-            <li>
-              <h4>~ Tiger Abrodi</h4>
-              <p>tigerabrodi@gmail.com</p>
+            {participants.map(({ id, username, email }) => (
+              <li key={id}>
+                <h4>~ {username}</h4>
+                <p>{email}</p>
 
-              <fetcher.Form method="post">
-                <input
-                  type="hidden"
-                  name={PARTICIPANT_INPUT_NAME}
-                  value="TODO"
-                />
+                <fetcher.Form method="post">
+                  <input
+                    type="hidden"
+                    name={PARTICIPANT_INPUT_NAME}
+                    value={id}
+                  />
 
-                <button aria-label="Remove participant CHANGE">
-                  <Close />
-                </button>
-              </fetcher.Form>
-            </li>
+                  <button aria-label={`Remove participant ${username}`}>
+                    <Close />
+                  </button>
+                </fetcher.Form>
+              </li>
+            ))}
           </ul>
         </div>
       </Dialog.Panel>

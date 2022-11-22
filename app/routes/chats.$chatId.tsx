@@ -1,5 +1,5 @@
 import type { DataFunctionArgs } from '@remix-run/node'
-import type { Chat, Status } from '~/types/firebase'
+import type { Chat, Participant, Status } from '~/types/firebase'
 
 import { json } from '@remix-run/node'
 import { Form, Link, Outlet, useLoaderData } from '@remix-run/react'
@@ -23,6 +23,7 @@ import { DefaultChat, RightFeather, Setting } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN } from '~/types'
+import { shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 const TYPE_A_MESSAGE = 'type a message'
@@ -63,8 +64,9 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
   })
 }
 
-function shouldShowDefaultChatImg(chat: Chat) {
-  return chat.imageUrl === ''
+export type ContextType = {
+  participants: Array<Participant>
+  chat: Chat
 }
 
 export default function ChatDetail() {
@@ -107,6 +109,8 @@ export default function ChatDetail() {
       setChatNameChangeStatus('error')
     })
   }, [chat.name, handleChatNameChange])
+
+  const context: ContextType = { chat, participants }
 
   return (
     <>
@@ -171,7 +175,7 @@ export default function ChatDetail() {
           </button>
         </Form>
       </div>
-      <Outlet />
+      <Outlet context={context} />
     </>
   )
 }

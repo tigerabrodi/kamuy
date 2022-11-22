@@ -25,6 +25,7 @@ import { useGetChatsForUserSubscription } from '~/hooks'
 import { Plus, Search, DefaultChat } from '~/icons'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN, INTENT } from '~/types'
+import { shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 export const links: LinksFunction = () => {
@@ -55,10 +56,6 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   } catch (error) {
     throw json({ error: 'You are unauthenticated.' }, { status: 401 })
   }
-}
-
-function shouldShowDefaultChatImg(chat: Chat) {
-  return chat.imageUrl === ''
 }
 
 export default function Chats() {
