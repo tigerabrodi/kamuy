@@ -85,7 +85,10 @@ export default function Settings() {
                     value={id}
                   />
 
-                  <button aria-label={`Remove participant ${username}`}>
+                  <button
+                    aria-label={`Remove participant ${username}`}
+                    disabled={id === chat.ownerId}
+                  >
                     <Close />
                   </button>
                 </fetcher.Form>

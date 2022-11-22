@@ -161,3 +161,7 @@
   width: 22px;
   height: 22px;
 }
+
+.settings__panel-participants li form button:disabled {
+  opacity: 0.5;
+}
