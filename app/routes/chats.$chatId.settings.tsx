@@ -17,6 +17,7 @@ import { useState } from 'react'
 
 import styles from './chats.$chatId.settings.css'
 
+import { Image } from '~/components'
 import { Spinner } from '~/components/Spinner'
 import { Close, DefaultChat, Delete, Plus } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
@@ -36,7 +37,6 @@ export default function Settings() {
   const firebaseContext = useFirebase()
 
   const [status, setStatus] = useState<Status>('idle')
-  const [hasLoadedImage, setHasLoadedImage] = useState(false)
 
   const { chat, participants } = useOutletContext<ContextType>()
 
@@ -68,12 +68,6 @@ export default function Settings() {
     }
     setStatus('error')
   }
-
-  function onLoadImage() {
-    setHasLoadedImage(true)
-  }
-
-  console.log(hasLoadedImage)
 
   return (
     <Dialog
@@ -115,17 +109,10 @@ export default function Settings() {
             {shouldShowDefaultChatImg(chat) ? (
               <DefaultChat className="settings__panel-main-default-img" />
             ) : (
-              <>
-                <img
-                  src={chat.imageUrl}
-                  alt=""
-                  onLoad={onLoadImage}
-                  className={hasLoadedImage ? '' : 'sr-only'}
-                />
-                <div
-                  className={hasLoadedImage ? 'sr-only' : 'img-placeholder'}
-                />
-              </>
+              <Image
+                chat={chat}
+                placeholderClassName="settings__panel-main-img-placeholder"
+              />
             )}
             <span className="sr-only">Upload image</span>
           </label>

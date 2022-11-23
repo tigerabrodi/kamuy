@@ -11,6 +11,7 @@ import { zx } from 'zodix'
 
 import { IS_NEWLY_CREATED } from './chats'
 
+import { Image } from '~/components'
 import { Spinner } from '~/components/Spinner'
 import {
   getChatById,
@@ -116,11 +117,11 @@ export default function ChatDetail() {
     <>
       <div className="chat">
         <div className="chat__header">
-          {shouldShowDefaultChatImg(chat) ? (
-            <DefaultChat className="chat__header-default-image" />
-          ) : (
-            <img src={chat.imageUrl} alt="" />
-          )}
+          <Image
+            chat={chat}
+            defaultChatClassName="chat__header-default-image"
+            placeholderClassName="chat__header-image-placeholder"
+          />
 
           <div className="chat__header-input">
             <input

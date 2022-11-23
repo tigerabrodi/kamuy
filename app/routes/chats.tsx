@@ -1,5 +1,5 @@
 import type { DataFunctionArgs, LinksFunction } from '@remix-run/node'
-import type { Chat, User } from '~/types/firebase'
+import type { User } from '~/types/firebase'
 
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/node'
@@ -15,6 +15,7 @@ import { ChatDetailPlaceholder } from './chats.$chatId'
 import chatIdStyles from './chats.$chatId.css'
 import chatsStyles from './chats.css'
 
+import { Image } from '~/components'
 import {
   getChatsForUserWithUid,
   getUserWithUid,
@@ -22,10 +23,9 @@ import {
 } from '~/firebase'
 import { getServerFirebase } from '~/firebase/firebase.server'
 import { useGetChatsForUserSubscription } from '~/hooks'
-import { Plus, Search, DefaultChat } from '~/icons'
+import { Plus, Search } from '~/icons'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN, INTENT } from '~/types'
-import { shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 export const links: LinksFunction = () => {
@@ -108,11 +108,10 @@ export default function Chats() {
                 aria-label={`${chat.name} chat`}
                 prefetch="intent"
               >
-                {shouldShowDefaultChatImg(chat) ? (
-                  <DefaultChat />
-                ) : (
-                  <img src={chat.imageUrl} alt="" />
-                )}
+                <Image
+                  chat={chat}
+                  placeholderClassName="chats__items-chat-img-placeholder"
+                />
                 <p>{chat.name}</p>
               </Link>
             ))

@@ -84,6 +84,13 @@
   border-radius: 100%;
 }
 
+.settings__panel-main-img-placeholder {
+  width: 165px;
+  height: 165px;
+  border-radius: 100%;
+  background-color: var(--colors-gray);
+}
+
 .settings__panel-main h2 {
   font-size: calc(1rem * 20 / 16);
   font-weight: 700;
@@ -172,11 +179,4 @@
 .settings__panel-participants li form button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.img-placeholder {
-  width: 165px;
-  height: 165px;
-  border-radius: 100%;
-  background-color: var(--colors-gray);
 }

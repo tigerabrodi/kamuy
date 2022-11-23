@@ -111,6 +111,13 @@
   border-radius: 100%;
 }
 
+.chats__items-chat-img-placeholder {
+  width: 45px;
+  height: 45px;
+  border-radius: 100%;
+  background-color: var(--colors-gray);
+}
+
 .chats__items-chats svg {
   width: 45px;
   height: 45px;
