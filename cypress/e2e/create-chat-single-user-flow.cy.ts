@@ -82,14 +82,18 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
       }).should('be.visible')
       cy.findByText(newUser.email).should('be.visible')
 
+      // Can't remove yourself from the chat as owner
       cy.findByRole('button', {
         name: `Remove participant ${newUser.username}`,
       }).should('be.disabled')
     })
 
+    // Upload image
     cy.get('img').should('not.exist')
     cy.findByLabelText(UPLOAD_IMAGE).attachFile(DEMO_AVATAR)
     cy.findByRole('alert', { name: 'uploading image' }).should('be.visible')
     cy.get('img').should('be.visible')
+
+    // Delete chat
   })
 })
