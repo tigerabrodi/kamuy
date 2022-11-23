@@ -55,6 +55,13 @@
   margin-top: 20px;
   width: 100%;
   row-gap: 15px;
+  position: relative;
+}
+
+.settings__panel-main-spinner {
+  top: 0;
+  right: 20px;
+  position: absolute;
 }
 
 .settings__panel-main input:focus-visible + label {
@@ -67,7 +74,7 @@
   cursor: pointer;
 }
 
-.settings__panel-main svg {
+.settings__panel-main-default-img {
   width: 165px;
 }
 
@@ -164,4 +171,5 @@
 
 .settings__panel-participants li form button:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
 }

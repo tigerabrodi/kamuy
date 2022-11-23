@@ -1,5 +1,7 @@
 import type { ContextType } from './chats.$chatId'
 import type { LinksFunction } from '@remix-run/node'
+import type { ChangeEvent } from 'react'
+import type { Status } from '~/types/firebase'
 
 import { Dialog } from '@headlessui/react'
 import {
@@ -9,11 +11,16 @@ import {
   useNavigate,
   useOutletContext,
 } from '@remix-run/react'
+import { doc, updateDoc } from 'firebase/firestore'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import { useState } from 'react'
 
 import styles from './chats.$chatId.settings.css'
 
+import { Spinner } from '~/components/Spinner'
 import { Close, DefaultChat, Delete, Plus } from '~/icons'
-import { shouldShowDefaultChatImg } from '~/utils'
+import { useFirebase } from '~/providers/FirebaseProvider'
+import { getExtensionOfFile, shouldShowDefaultChatImg } from '~/utils'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -26,8 +33,40 @@ const PARTICIPANT_INPUT_NAME = 'participantId'
 export default function Settings() {
   const navigate = useNavigate()
   const fetcher = useFetcher()
+  const firebaseContext = useFirebase()
+
+  const [status, setStatus] = useState<Status>('idle')
 
   const { chat, participants } = useOutletContext<ContextType>()
+
+  async function onImageUpload(event: ChangeEvent<HTMLInputElement>) {
+    event.preventDefault()
+    setStatus('loading')
+    const file = event.target.files?.[0]
+
+    if (
+      file &&
+      firebaseContext?.firebaseStorage &&
+      firebaseContext?.firebaseDb
+    ) {
+      const extension = getExtensionOfFile(file)
+
+      const avatarRef = ref(
+        firebaseContext.firebaseStorage,
+        `chats/${chat.id}.${extension}`
+      )
+
+      const snapshot = await uploadBytes(avatarRef, file)
+      const imageUrl = await getDownloadURL(snapshot.ref)
+
+      const chatDoc = doc(firebaseContext.firebaseDb, `chats/${chat.id}`)
+      await updateDoc(chatDoc, { imageUrl })
+
+      setStatus('success')
+      return
+    }
+    setStatus('error')
+  }
 
   return (
     <Dialog
@@ -50,11 +89,24 @@ export default function Settings() {
         </div>
 
         <div className="settings__panel-main">
-          <input type="file" className="sr-only" id="image" accept="image/*" />
+          {status === 'loading' && (
+            <Spinner
+              label="uploading image"
+              class="settings__panel-main-spinner"
+            />
+          )}
+          <input
+            type="file"
+            className="sr-only"
+            id="image"
+            accept="image/*"
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            onChange={onImageUpload}
+          />
 
           <label htmlFor="image">
             {shouldShowDefaultChatImg(chat) ? (
-              <DefaultChat />
+              <DefaultChat className="settings__panel-main-default-img" />
             ) : (
               <img src={chat.imageUrl} alt="" />
             )}
