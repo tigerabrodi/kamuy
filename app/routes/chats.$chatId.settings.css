@@ -173,3 +173,10 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.img-placeholder {
+  width: 165px;
+  height: 165px;
+  border-radius: 100%;
+  background-color: var(--colors-gray);
+}
