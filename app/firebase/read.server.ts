@@ -15,6 +15,7 @@ import {
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
+import { UserSchema } from '~/types/firebase'
 import { ChatSchema, ParticipantSchema } from '~/types/firebase'
 
 export async function getUserWithUid(uid: string): Promise<User> {
@@ -31,7 +32,7 @@ export async function getUserWithUid(uid: string): Promise<User> {
     throw new Error('User not found')
   }
 
-  return user
+  return UserSchema.parse(user)
 }
 
 export async function getChatsForUserWithUid(

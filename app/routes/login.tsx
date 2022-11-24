@@ -153,7 +153,7 @@ export const action: ActionFunction = async ({ request }) => {
         firebaseAdminAuth.createSessionCookie(await user.getIdToken(), {
           expiresIn: FIVE_DAYS_IN_MILLISECONDS,
         }),
-        createUserWithUserData({ email, username, id: user.uid, chats: [] }),
+        createUserWithUserData({ email, username, id: user.uid }),
       ])
 
       authSession.set(ACCESS_TOKEN, token)

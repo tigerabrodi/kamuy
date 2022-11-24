@@ -59,7 +59,6 @@ export async function createChatForUserWithId(userId: string): Promise<Chat> {
       `/${CHATS_COLLECTION}/${newChat.id}/${PARTICIPANTS_COLLECTION}/${userId}`
     )
 
-    transaction.update(userDoc, { chats: [chatDoc, ...user.chats] })
     transaction.set(chatDoc, newChat)
     transaction.set(participantDoc, participant)
 
