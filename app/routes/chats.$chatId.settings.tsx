@@ -1,9 +1,11 @@
 import type { ContextType } from './chats.$chatId'
-import type { LinksFunction } from '@remix-run/node'
+import type { DataFunctionArgs, LinksFunction } from '@remix-run/node'
 import type { ChangeEvent } from 'react'
 import type { Status } from '~/types/firebase'
 
 import { Dialog } from '@headlessui/react'
+import { redirect } from '@remix-run/node'
+import { json } from '@remix-run/node'
 import {
   Form,
   Link,
@@ -14,22 +16,62 @@ import {
 import { doc, updateDoc } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { useState } from 'react'
+import { z } from 'zod'
+import { zx } from 'zodix'
 
 import styles from './chats.$chatId.settings.css'
 
 import { Image } from '~/components'
 import { Spinner } from '~/components/Spinner'
+import { getChatById, getServerFirebase } from '~/firebase'
 import { Close, DefaultChat, Delete, Plus } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
+import { authGetSession } from '~/sessions/auth.server'
+import {
+  validationCommitSession,
+  validationGetSession,
+} from '~/sessions/validationStates.server'
+import { ACCESS_TOKEN, SET_COOKIE, VALIDATION_STATE_ERROR } from '~/types'
 import { getExtensionOfFile, shouldShowDefaultChatImg } from '~/utils'
+import { getCookie } from '~/utils/getCookie'
+
+const BACK_ROUTE = '..'
+const PARTICIPANT_INPUT_NAME = 'participantId'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
 }
 
-const BACK_ROUTE = '..'
+export const loader = async ({ params, request }: DataFunctionArgs) => {
+  const { firebaseAdminAuth } = getServerFirebase()
+  const { chatId } = zx.parseParams(params, { chatId: z.string() })
 
-const PARTICIPANT_INPUT_NAME = 'participantId'
+  const authSession = await authGetSession(getCookie(request))
+  const token = authSession.get(ACCESS_TOKEN)
+
+  const [validationSession, decodedToken, currentChat] = await Promise.all([
+    validationGetSession(getCookie(request)),
+    firebaseAdminAuth.verifySessionCookie(token),
+    getChatById(chatId),
+  ])
+
+  const isNotOwnerOfChat = currentChat.ownerId !== decodedToken.uid
+
+  if (isNotOwnerOfChat) {
+    validationSession.flash(
+      VALIDATION_STATE_ERROR,
+      "You're not the owner of this chat."
+    )
+
+    return redirect(`/chats/${currentChat.id}`, {
+      headers: {
+        [SET_COOKIE]: await validationCommitSession(validationSession),
+      },
+    })
+  }
+
+  return null
+}
 
 export default function Settings() {
   const navigate = useNavigate()
