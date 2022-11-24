@@ -18,6 +18,7 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { useState } from 'react'
 import { z } from 'zod'
+import { zfd } from 'zod-form-data'
 import { zx } from 'zodix'
 
 import styles from './chats.$chatId.settings.css'
@@ -37,6 +38,7 @@ import {
   INTENT,
   SET_COOKIE,
   VALIDATION_STATE_ERROR,
+  VALIDATION_STATE_SUCCESS,
 } from '~/types'
 import { getExtensionOfFile, shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
@@ -44,6 +46,7 @@ import { getCookie } from '~/utils/getCookie'
 const BACK_ROUTE = '..'
 const PARTICIPANT_INPUT_NAME = 'participantId'
 const DELETE_CHAT = 'deleteChat'
+const CHAT_NAME = 'chatName'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -139,6 +142,7 @@ export default function Settings() {
             <button aria-label="Delete chat" name={INTENT} value={DELETE_CHAT}>
               <Delete />
             </button>
+            <input type="hidden" name={CHAT_NAME} value={chat.name} />
           </Form>
         </div>
 
@@ -216,6 +220,12 @@ export default function Settings() {
   )
 }
 
+const FormSchema = zfd.formData(
+  z.object({
+    [CHAT_NAME]: z.string(),
+  })
+)
+
 export const action = async ({ request, params }: DataFunctionArgs) => {
   const { firebaseAdminAuth } = getServerFirebase()
   const { chatId } = zx.parseParams(params, { chatId: z.string() })
@@ -224,10 +234,26 @@ export const action = async ({ request, params }: DataFunctionArgs) => {
   const token = authSession.get(ACCESS_TOKEN)
 
   try {
-    const { uid } = await firebaseAdminAuth.verifySessionCookie(token)
+    const [formData, validationSession, { uid }] = await Promise.all([
+      request.formData(),
+      validationGetSession(getCookie(request)),
+      firebaseAdminAuth.verifySessionCookie(token),
+    ])
+
+    const { chatName } = FormSchema.parse(formData)
+
+    validationSession.flash(
+      VALIDATION_STATE_SUCCESS,
+      `Successfully deleted chat ${chatName}`
+    )
+
     await deleteChatWithId({ chatId, userId: uid })
 
-    return redirect('/chats')
+    return redirect('/chats', {
+      headers: {
+        [SET_COOKIE]: await validationCommitSession(validationSession),
+      },
+    })
   } catch (error) {
     throw json({ error: 'You are unauthenticated.' }, { status: 401 })
   }
