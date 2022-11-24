@@ -187,7 +187,7 @@ export default function Settings() {
 
         <div className="settings__panel-participants">
           <h3>Participants</h3>
-          <Link to="./participants" aria-label="Add new participant">
+          <Link to="./participants" aria-label="Add new participants">
             <Plus />
           </Link>
 

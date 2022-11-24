@@ -75,7 +75,7 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
       'be.visible'
     )
 
-    cy.findByRole('link', { name: 'Add new participant' }).should('be.visible')
+    cy.findByRole('link', { name: 'Add new participants' }).should('be.visible')
     cy.findByRole('listitem').within(() => {
       cy.findByRole('heading', {
         name: `~ ${newUser.username}`,
