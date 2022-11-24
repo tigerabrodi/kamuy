@@ -4,14 +4,15 @@ import type { ChangeEvent } from 'react'
 import type { Status } from '~/types/firebase'
 
 import { Dialog } from '@headlessui/react'
-import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/node'
+import { redirect } from '@remix-run/node'
 import {
   Form,
   Link,
   useFetcher,
   useNavigate,
   useOutletContext,
+  useTransition,
 } from '@remix-run/react'
 import { doc, updateDoc } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
@@ -23,7 +24,7 @@ import styles from './chats.$chatId.settings.css'
 
 import { Image } from '~/components'
 import { Spinner } from '~/components/Spinner'
-import { getChatById, getServerFirebase } from '~/firebase'
+import { deleteChatWithId, getChatById, getServerFirebase } from '~/firebase'
 import { Close, DefaultChat, Delete, Plus } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
@@ -31,12 +32,18 @@ import {
   validationCommitSession,
   validationGetSession,
 } from '~/sessions/validationStates.server'
-import { ACCESS_TOKEN, SET_COOKIE, VALIDATION_STATE_ERROR } from '~/types'
+import {
+  ACCESS_TOKEN,
+  INTENT,
+  SET_COOKIE,
+  VALIDATION_STATE_ERROR,
+} from '~/types'
 import { getExtensionOfFile, shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 const BACK_ROUTE = '..'
 const PARTICIPANT_INPUT_NAME = 'participantId'
+const DELETE_CHAT = 'deleteChat'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -77,10 +84,14 @@ export default function Settings() {
   const navigate = useNavigate()
   const fetcher = useFetcher()
   const firebaseContext = useFirebase()
+  const transition = useTransition()
 
   const [status, setStatus] = useState<Status>('idle')
 
   const { chat, participants } = useOutletContext<ContextType>()
+  const isDeletingChat =
+    transition.state === 'submitting' &&
+    transition.submission.formData.get(INTENT) === DELETE_CHAT
 
   async function onImageUpload(event: ChangeEvent<HTMLInputElement>) {
     event.preventDefault()
@@ -124,8 +135,8 @@ export default function Settings() {
           </Link>
           <Dialog.Title as="h1">Settings</Dialog.Title>
 
-          <Form>
-            <button aria-label="Delete chat">
+          <Form method="post">
+            <button aria-label="Delete chat" name={INTENT} value={DELETE_CHAT}>
               <Delete />
             </button>
           </Form>
@@ -135,6 +146,12 @@ export default function Settings() {
           {status === 'loading' && (
             <Spinner
               label="uploading image"
+              class="settings__panel-main-spinner"
+            />
+          )}
+          {isDeletingChat && (
+            <Spinner
+              label="deleting chat"
               class="settings__panel-main-spinner"
             />
           )}
@@ -197,4 +214,21 @@ export default function Settings() {
       </Dialog.Panel>
     </Dialog>
   )
+}
+
+export const action = async ({ request, params }: DataFunctionArgs) => {
+  const { firebaseAdminAuth } = getServerFirebase()
+  const { chatId } = zx.parseParams(params, { chatId: z.string() })
+
+  const authSession = await authGetSession(getCookie(request))
+  const token = authSession.get(ACCESS_TOKEN)
+
+  try {
+    const { uid } = await firebaseAdminAuth.verifySessionCookie(token)
+    await deleteChatWithId({ chatId, userId: uid })
+
+    return redirect('/chats')
+  } catch (error) {
+    throw json({ error: 'You are unauthenticated.' }, { status: 401 })
+  }
 }
