@@ -69,7 +69,7 @@ export async function getChatById(id: string): Promise<Chat> {
     throw new Error('Chat not found')
   }
 
-  return ChatSchema.parse(chat)
+  return chat
 }
 
 export async function getParticipantsWithChatId(
