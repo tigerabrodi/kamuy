@@ -85,12 +85,12 @@ export async function deleteChatWithId({
       `/${CHATS_COLLECTION}/${chatId}/${PARTICIPANTS_COLLECTION}`
     )
 
-    const participantsSnapshot = await getDocs(participantsDoc)
-    const chatSnapshot = await transaction.get(chatDoc)
+    const [participantsSnapshot, chatSnapshot] = await Promise.all([
+      getDocs(participantsDoc),
+      transaction.get(chatDoc),
+    ])
 
     const chat = ChatSchema.parse(chatSnapshot.data())
-
-    console.log('chat', chat)
 
     if (chat.ownerId !== userId) {
       throw new Error('User is not the owner of the chat')
