@@ -24,7 +24,6 @@ import { DefaultChat, RightFeather, Setting } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN } from '~/types'
-import { shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 const TYPE_A_MESSAGE = 'type a message'
