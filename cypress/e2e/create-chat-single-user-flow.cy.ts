@@ -98,9 +98,11 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
     // Delete chat
     cy.findByRole('button', { name: DELETE_CHAT }).click()
     cy.findByRole('alert', { name: 'deleting chat' }).should('be.visible')
-    cy.findByRole('status')
-      .findByText(`Successfully deleted chat ${chat.name}`)
-      .should('be.visible')
-    cy.findByRole('link', { name: `${chat.name} chat` }).should('be.visible')
+    cy.findByRole('alert', { name: 'deleting chat' }).should('not.exist')
   })
+
+  cy.findByRole('status')
+    .findByText(`Successfully deleted chat ${chat.name}`)
+    .should('be.visible')
+  cy.findByRole('link', { name: `${chat.name} chat` }).should('not.exist')
 })
