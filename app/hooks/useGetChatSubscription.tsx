@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 
 import { CHATS_COLLECTION } from '~/firebase/constants'
 import { useFirebase } from '~/providers/FirebaseProvider'
-import { ChatSchema } from '~/types/firebase'
 
 export function useGetChatSubscription({ initialChat }: { initialChat: Chat }) {
   const firebaseContext = useFirebase()
@@ -22,7 +21,9 @@ export function useGetChatSubscription({ initialChat }: { initialChat: Chat }) {
 
       const unsubscribe = onSnapshot(chatDocRef, (chatSnapshot) => {
         const newChat = chatSnapshot.data()
-        setChat(ChatSchema.parse(newChat))
+        if (newChat) {
+          setChat(newChat)
+        }
       })
 
       return unsubscribe
