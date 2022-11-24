@@ -67,9 +67,17 @@ export default function Chats() {
     initialUserChats,
   })
 
-  const isSubmittingCreateNewChat =
+  const isRedirectingAfterSubmission =
+    transition.state === 'loading' &&
+    transition.submission?.action === '/chats' &&
+    transition.type === 'actionRedirect'
+
+  const isSubmittingANewChat =
     transition.state === 'submitting' &&
     transition.submission.formData.get(INTENT) === CREATE_NEW_CHAT
+
+  const shouldShowChatPlaceholder =
+    isSubmittingANewChat || isRedirectingAfterSubmission
 
   return (
     <main className="chats">
@@ -122,7 +130,7 @@ export default function Chats() {
       </div>
 
       <div className="chats__outlet-wrapper">
-        {isSubmittingCreateNewChat ? <ChatDetailPlaceholder /> : <Outlet />}
+        {shouldShowChatPlaceholder ? <ChatDetailPlaceholder /> : <Outlet />}
       </div>
     </main>
   )
