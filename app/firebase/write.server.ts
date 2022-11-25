@@ -1,5 +1,5 @@
 import type { DocumentReference } from 'firebase/firestore'
-import type { Chat, Participant, Timestamp, User } from '~/types/firebase'
+import type { Chat, Member, Timestamp, User } from '~/types/firebase'
 
 import { collection, getDocs } from 'firebase/firestore'
 import { runTransaction, serverTimestamp } from 'firebase/firestore'
@@ -8,7 +8,7 @@ import { v4 } from 'uuid'
 
 import {
   CHATS_COLLECTION,
-  PARTICIPANTS_COLLECTION,
+  MEMBERS_COLLECTION,
   UNTITLED,
   USERS_COLLECTION,
 } from './constants'
@@ -47,23 +47,23 @@ export async function createChatForUserWithId(userId: string): Promise<Chat> {
       ownerId: userId,
       imageUrl: '',
       createdAt: serverTimestamp() as unknown as Timestamp,
-      participantIds: [userId],
+      memberIds: [userId],
     }
     const chatDoc = doc(firebaseDb, `/${CHATS_COLLECTION}/${newChat.id}`)
 
-    const participant: Participant = {
+    const member: Member = {
       id: userId,
       username: user.username,
       email: user.email,
       addedAt: serverTimestamp() as unknown as Timestamp,
     }
-    const participantDoc = doc(
+    const memberDoc = doc(
       firebaseDb,
-      `/${CHATS_COLLECTION}/${newChat.id}/${PARTICIPANTS_COLLECTION}/${userId}`
+      `/${CHATS_COLLECTION}/${newChat.id}/${MEMBERS_COLLECTION}/${userId}`
     )
 
     transaction.set(chatDoc, newChat)
-    transaction.set(participantDoc, participant)
+    transaction.set(memberDoc, member)
 
     return newChat
   })
@@ -80,13 +80,13 @@ export async function deleteChatWithId({
 
   await runTransaction(firebaseDb, async (transaction) => {
     const chatDoc = doc(firebaseDb, `/${CHATS_COLLECTION}/${chatId}`)
-    const participantsDoc = collection(
+    const membersDoc = collection(
       firebaseDb,
-      `/${CHATS_COLLECTION}/${chatId}/${PARTICIPANTS_COLLECTION}`
+      `/${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}`
     )
 
-    const [participantsSnapshot, chatSnapshot] = await Promise.all([
-      getDocs(participantsDoc),
+    const [membersSnapshot, chatSnapshot] = await Promise.all([
+      getDocs(membersDoc),
       transaction.get(chatDoc),
     ])
 
@@ -96,8 +96,8 @@ export async function deleteChatWithId({
       throw new Error('User is not the owner of the chat')
     }
 
-    participantsSnapshot.docs.forEach((participantDoc) => {
-      transaction.delete(participantDoc.ref)
+    membersSnapshot.docs.forEach((memberDoc) => {
+      transaction.delete(memberDoc.ref)
     })
     transaction.delete(chatDoc)
   })

@@ -1,5 +1,5 @@
 import type { CollectionReference, DocumentReference } from 'firebase/firestore'
-import type { Chat, Participant, User } from '~/types/firebase'
+import type { Chat, Member, User } from '~/types/firebase'
 
 import { orderBy } from 'firebase/firestore'
 import { collection, getDocs, query, where } from 'firebase/firestore'
@@ -8,15 +8,15 @@ import { z } from 'zod'
 
 import {
   CHATS_COLLECTION,
-  PARTICIPANTS_COLLECTION,
+  MEMBERS_COLLECTION,
   USERS_COLLECTION,
   CREATED_AT,
-  PARTICIPANT_IDS,
+  MEMBER_IDS,
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
 import { UserSchema } from '~/types/firebase'
-import { ChatSchema, ParticipantSchema } from '~/types/firebase'
+import { ChatSchema, MemberSchema } from '~/types/firebase'
 
 export async function getUserWithUid(uid: string): Promise<User> {
   const { firebaseDb } = getServerFirebase()
@@ -46,7 +46,7 @@ export async function getChatsForUserWithUid(
   ) as CollectionReference<Chat>
   const chatsQuery = query<Chat>(
     chatsRef,
-    where(PARTICIPANT_IDS, 'array-contains', uid),
+    where(MEMBER_IDS, 'array-contains', uid),
     orderBy(CREATED_AT, 'desc')
   )
   const chatsSnapshot = await getDocs(chatsQuery)
@@ -72,19 +72,19 @@ export async function getChatById(id: string): Promise<Chat> {
   return chat
 }
 
-export async function getParticipantsWithChatId(
+export async function getMembersWithChatId(
   chatId: string
-): Promise<Array<Participant>> {
+): Promise<Array<Member>> {
   const { firebaseDb } = getServerFirebase()
 
-  const participantsRef = collection(
+  const membersRef = collection(
     firebaseDb,
-    `${CHATS_COLLECTION}/${chatId}/${PARTICIPANTS_COLLECTION}`
-  ) as CollectionReference<Participant>
+    `${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}`
+  ) as CollectionReference<Member>
 
-  const participantsSnapshot = await getDocs(participantsRef)
+  const membersSnapshot = await getDocs(membersRef)
 
-  const participants = participantsSnapshot.docs.map((doc) => doc.data())
+  const members = membersSnapshot.docs.map((doc) => doc.data())
 
-  return z.array(ParticipantSchema).parse(participants)
+  return z.array(MemberSchema).parse(members)
 }

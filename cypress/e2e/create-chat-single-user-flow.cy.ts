@@ -70,12 +70,10 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
     cy.findByLabelText(UPLOAD_IMAGE).findByRole('img').should('not.exist')
     cy.findByRole('heading', { name: chat.name, level: 2 }).should('be.visible')
 
-    cy.findByText('1 participants').should('be.visible')
-    cy.findByRole('heading', { name: 'Participants', level: 3 }).should(
-      'be.visible'
-    )
+    cy.findByText('1 members').should('be.visible')
+    cy.findByRole('heading', { name: 'Members', level: 3 }).should('be.visible')
 
-    cy.findByRole('link', { name: 'Add new participants' }).should('be.visible')
+    cy.findByRole('link', { name: 'Add new members' }).should('be.visible')
     cy.findByRole('listitem').within(() => {
       cy.findByRole('heading', {
         name: `~ ${newUser.username}`,
@@ -85,7 +83,7 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
 
       // Can't remove yourself from the chat as owner
       cy.findByRole('button', {
-        name: `Remove participant ${newUser.username}`,
+        name: `Remove member ${newUser.username}`,
       }).should('be.disabled')
     })
 

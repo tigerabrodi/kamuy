@@ -10,7 +10,7 @@ const DEMO_AVATAR = 'demo-avatar.webp'
 const DELETE_CHAT = 'Delete chat'
 
 const ownerUser = createNewUser()
-const participantUser = createNewUser()
+const memberUser = createNewUser()
 
 const ownerChat = createChat()
 
@@ -18,14 +18,14 @@ beforeEach(() => {
   cy.clearCookies()
 })
 
-it('Should be able to interact with other users, chat and invite as participant.', () => {
+it('Should be able to interact with other users, chat and invite as member.', () => {
   cy.visit('/')
-  //  Participant creates account
-  cy.login(participantUser)
+  //  Member creates account
+  cy.login(memberUser)
   cy.findByRole('button', { name: 'Sign In' }).click()
   cy.findByRole('button', { name: 'Create new chat' }).should('be.visible')
 
-  // Logout participant and login owner who will invite participant to chat
+  // Logout member and login owner who will invite member to chat
   cy.clearCookies().visit('/')
 
   cy.login(ownerUser)
@@ -39,11 +39,9 @@ it('Should be able to interact with other users, chat and invite as participant.
   cy.findByRole('alert', { name: CHANGING_NAME }).should('be.visible')
   cy.findByRole('link', { name: `Settings of ${ownerChat.name} chat` }).click()
 
-  cy.findByRole('link', { name: 'Add new participants' }).click()
+  cy.findByRole('link', { name: 'Add new members' }).click()
 
-  cy.findByRole('dialog', { name: 'Participants' }).within(() => {
-    cy.findByRole('heading', { name: 'Participants', level: 1 }).should(
-      'be.visible'
-    )
+  cy.findByRole('dialog', { name: 'Members' }).within(() => {
+    cy.findByRole('heading', { name: 'Members', level: 1 }).should('be.visible')
   })
 })

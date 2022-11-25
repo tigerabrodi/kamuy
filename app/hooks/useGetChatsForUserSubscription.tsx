@@ -10,11 +10,7 @@ import {
 } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 
-import {
-  CHATS_COLLECTION,
-  CREATED_AT,
-  PARTICIPANT_IDS,
-} from '~/firebase/constants'
+import { CHATS_COLLECTION, CREATED_AT, MEMBER_IDS } from '~/firebase/constants'
 import { useFirebase } from '~/providers/FirebaseProvider'
 
 export function useGetChatsForUserSubscription({
@@ -36,7 +32,7 @@ export function useGetChatsForUserSubscription({
 
       const chatsQuery = query<Chat>(
         chatsCollectionRef,
-        where(PARTICIPANT_IDS, 'array-contains', user.id),
+        where(MEMBER_IDS, 'array-contains', user.id),
         orderBy(CREATED_AT, 'desc')
       )
 

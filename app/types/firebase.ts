@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { CREATED_AT, OWNER_ID, PARTICIPANT_IDS } from '~/firebase/constants'
+import { CREATED_AT, OWNER_ID, MEMBER_IDS } from '~/firebase/constants'
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -23,19 +23,19 @@ export const ChatSchema = z.object({
   [OWNER_ID]: z.string(),
   [CREATED_AT]: TimestampSchema,
   imageUrl: z.string(),
-  [PARTICIPANT_IDS]: z.array(z.string()),
+  [MEMBER_IDS]: z.array(z.string()),
 })
 
 export type Chat = z.infer<typeof ChatSchema>
 
-export const ParticipantSchema = z.object({
+export const MemberSchema = z.object({
   id: z.string(),
   username: z.string(),
   email: z.string().email(),
   addedAt: TimestampSchema,
 })
 
-export type Participant = z.infer<typeof ParticipantSchema>
+export type Member = z.infer<typeof MemberSchema>
 
 export const FirebaseOptionsSchema = z.object({
   apiKey: z.string().optional(),

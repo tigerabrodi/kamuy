@@ -44,7 +44,7 @@ import { getExtensionOfFile, shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 const BACK_ROUTE = '..'
-const PARTICIPANT_INPUT_NAME = 'participantId'
+const MEMBER_INPUT_NAME = 'memberId'
 const DELETE_CHAT = 'deleteChat'
 const CHAT_NAME = 'chatName'
 
@@ -91,7 +91,7 @@ export default function Settings() {
 
   const [status, setStatus] = useState<Status>('idle')
 
-  const { chat, participants } = useOutletContext<ContextType>()
+  const { chat, members } = useOutletContext<ContextType>()
   const isDeletingChat =
     transition.state === 'submitting' &&
     transition.submission.formData.get(INTENT) === DELETE_CHAT
@@ -182,30 +182,26 @@ export default function Settings() {
 
           <h2>{chat.name}</h2>
 
-          <p>{participants.length} participants</p>
+          <p>{members.length} members</p>
         </div>
 
-        <div className="settings__panel-participants">
-          <h3>Participants</h3>
-          <Link to="./participants" aria-label="Add new participants">
+        <div className="settings__panel-members">
+          <h3>Members</h3>
+          <Link to="./members" aria-label="Add new members">
             <Plus />
           </Link>
 
           <ul>
-            {participants.map(({ id, username, email }) => (
+            {members.map(({ id, username, email }) => (
               <li key={id}>
                 <h4>~ {username}</h4>
                 <p>{email}</p>
 
                 <fetcher.Form method="post">
-                  <input
-                    type="hidden"
-                    name={PARTICIPANT_INPUT_NAME}
-                    value={id}
-                  />
+                  <input type="hidden" name={MEMBER_INPUT_NAME} value={id} />
 
                   <button
-                    aria-label={`Remove participant ${username}`}
+                    aria-label={`Remove member ${username}`}
                     disabled={id === chat.ownerId}
                   >
                     <Close />

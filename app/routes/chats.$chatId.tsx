@@ -1,5 +1,5 @@
 import type { DataFunctionArgs } from '@remix-run/node'
-import type { Chat, Participant, Status } from '~/types/firebase'
+import type { Chat, Member, Status } from '~/types/firebase'
 
 import { json } from '@remix-run/node'
 import { Form, Link, Outlet, useLoaderData } from '@remix-run/react'
@@ -15,11 +15,11 @@ import { Image } from '~/components'
 import { Spinner } from '~/components/Spinner'
 import {
   getChatById,
-  getParticipantsWithChatId,
+  getMembersWithChatId,
   getServerFirebase,
 } from '~/firebase'
 import { CHATS_COLLECTION } from '~/firebase/constants'
-import { useGetChatSubscription, useGetParticipantsSubscription } from '~/hooks'
+import { useGetChatSubscription, useGetMembersSubscription } from '~/hooks'
 import { DefaultChat, RightFeather, Setting } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
@@ -41,36 +41,36 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
 
   const decodedToken = await firebaseAdminAuth.verifySessionCookie(token)
 
-  const [initialChat, initialParticipants] = await Promise.all([
+  const [initialChat, initialMembers] = await Promise.all([
     getChatById(chatId),
-    getParticipantsWithChatId(chatId),
+    getMembersWithChatId(chatId),
   ])
 
-  const isUserAParticipantOfChat = initialParticipants.some(
-    (participant) => participant.id === decodedToken.uid
+  const isUserAMemberOfChat = initialMembers.some(
+    (member) => member.id === decodedToken.uid
   )
 
-  if (!isUserAParticipantOfChat) {
+  if (!isUserAMemberOfChat) {
     throw json(
-      { message: "You're not a participant in this chat." },
+      { message: "You're not a member in this chat." },
       { status: 403 }
     )
   }
 
   return json({
     initialChat,
-    initialParticipants,
+    initialMembers,
     isNewlyCreated,
   })
 }
 
 export type ContextType = {
-  participants: Array<Participant>
+  members: Array<Member>
   chat: Chat
 }
 
 export default function ChatDetail() {
-  const { initialChat, initialParticipants, isNewlyCreated } =
+  const { initialChat, initialMembers, isNewlyCreated } =
     useLoaderData<typeof loader>()
   const firebaseContext = useFirebase()
 
@@ -78,8 +78,8 @@ export default function ChatDetail() {
     initialChat,
   })
 
-  const { participants } = useGetParticipantsSubscription({
-    initialParticipants,
+  const { members } = useGetMembersSubscription({
+    initialMembers,
     chat,
   })
 
@@ -110,7 +110,7 @@ export default function ChatDetail() {
     })
   }, [chat.name, handleChatNameChange])
 
-  const context: ContextType = { chat, participants }
+  const context: ContextType = { chat, members: members }
 
   return (
     <>
@@ -151,8 +151,8 @@ export default function ChatDetail() {
           </Link>
 
           <p>
-            {participants.map((participant) => (
-              <span key={participant.id}>{participant.username},</span>
+            {members.map((member) => (
+              <span key={member.id}>{member.username},</span>
             ))}
           </p>
         </div>
