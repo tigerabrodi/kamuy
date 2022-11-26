@@ -1,13 +1,7 @@
 import { createNewUser, createChat } from '../support/factory'
 
-const UNTITLED = 'Untitled'
-const TYPE_A_MESSAGE = 'type a message'
 const ENTER_CHAT_NAME = 'Enter chat name'
-const SEND_MESSAGE = 'Send message'
 const CHANGING_NAME = 'Changing name'
-const UPLOAD_IMAGE = 'Upload image'
-const DEMO_AVATAR = 'demo-avatar.webp'
-const DELETE_CHAT = 'Delete chat'
 const ADD_PEOPLE_TO_CHAT = 'Add people to chat'
 
 const ownerUser = createNewUser()
@@ -65,10 +59,5 @@ it('Should be able to interact with other users, chat and invite as member.', ()
         )
       })
     })
-
-    cy.findByLabelText(ADD_PEOPLE_TO_CHAT).clear().type('lmao')
-    cy.findByRole('button', { name: 'Add' }).click()
-
-    cy.findByRole('status').findByText('User not found.').should('be.visible')
   })
 })
