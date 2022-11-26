@@ -33,6 +33,14 @@
   padding: 20px 0;
 }
 
+.members__panel-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 22px;
+  height: 22px;
+}
+
 .members__panel h1 {
   font-weight: 700;
   font-size: calc(1rem * 40 / 16);
@@ -121,7 +129,7 @@
   background-color: var(--colors-teal-200);
   box-shadow: var(--shadows-inner);
   display: grid;
-  grid-template-areas: 'heading button' 'email button';
+  grid-template-areas: 'heading' 'email';
   align-items: center;
   padding: 7px 12px;
   margin-top: 15px;
