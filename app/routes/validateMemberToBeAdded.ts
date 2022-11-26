@@ -19,7 +19,11 @@ import { CHAT_ID, MEMBER } from './chats.$chatId.settings.members'
 import { getServerFirebase } from '~/firebase'
 import { CHATS_COLLECTION, USERS_COLLECTION } from '~/firebase/constants'
 import { authGetSession } from '~/sessions/auth.server'
-import { ACCESS_TOKEN } from '~/types'
+import {
+  validationCommitSession,
+  validationGetSession,
+} from '~/sessions/validationStates.server'
+import { ACCESS_TOKEN, SET_COOKIE, VALIDATION_STATE_ERROR } from '~/types'
 import { ChatSchema } from '~/types/firebase'
 import { getCookie } from '~/utils/getCookie'
 
@@ -36,8 +40,9 @@ const FormSchema = zfd.formData(
 export const action = async ({ request }: DataFunctionArgs) => {
   const { firebaseAdminAuth, firebaseDb } = getServerFirebase()
 
-  const [authSession, formData] = await Promise.all([
+  const [authSession, validationSession, formData] = await Promise.all([
     authGetSession(getCookie(request)),
+    validationGetSession(getCookie(request)),
     request.formData(),
   ])
 
@@ -67,14 +72,33 @@ export const action = async ({ request }: DataFunctionArgs) => {
     const usersSnapshot = await getDocs(usersQuery)
     const user = usersSnapshot.docs[0]?.data()
     if (!user) {
-      return json({ error: 'User not found' }, { status: 404 })
+      validationSession.flash(VALIDATION_STATE_ERROR, 'User not found.')
+      return json(
+        { error: 'error' },
+        {
+          status: 404,
+          headers: {
+            [SET_COOKIE]: await validationCommitSession(validationSession),
+          },
+        }
+      )
     }
 
     const isUserAlreadyMember = chat.memberIds.includes(user.id)
     if (isUserAlreadyMember) {
+      validationSession.flash(
+        VALIDATION_STATE_ERROR,
+        'User is already a member of the chat.'
+      )
+
       return json(
-        { error: 'User is already a member of the chat.' },
-        { status: 400 }
+        { error: 'error' },
+        {
+          status: 400,
+          headers: {
+            [SET_COOKIE]: await validationCommitSession(validationSession),
+          },
+        }
       )
     }
 

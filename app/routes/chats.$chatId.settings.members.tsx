@@ -31,8 +31,6 @@ export default function ChatSettingsMember() {
   const fetcher = useFetcher<typeof action>()
   const { chatId } = useParams<{ chatId: string }>()
 
-  const fetchedError =
-    fetcher.data && 'error' in fetcher.data && fetcher.data.error
   const fetchedUser =
     fetcher.data && 'user' in fetcher.data && fetcher.data.user
 
@@ -87,8 +85,6 @@ export default function ChatSettingsMember() {
             <button type="submit">Add</button>
           </div>
         </fetcher.Form>
-
-        {fetchedError && <p role="alert">{fetchedError}</p>}
 
         <div className="members__list">
           <h3>New members</h3>
