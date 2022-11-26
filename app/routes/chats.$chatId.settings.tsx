@@ -9,6 +9,7 @@ import { redirect } from '@remix-run/node'
 import {
   Form,
   Link,
+  Outlet,
   useFetcher,
   useNavigate,
   useOutletContext,
@@ -126,93 +127,96 @@ export default function Settings() {
   }
 
   return (
-    <Dialog
-      open={true}
-      onClose={() => navigate(BACK_ROUTE)}
-      className="settings"
-    >
-      <Dialog.Panel className="settings__panel">
-        <div className="settings__panel-header">
-          <Link to={BACK_ROUTE} aria-label="Close">
-            <Close />
-          </Link>
-          <Dialog.Title as="h1">Settings</Dialog.Title>
+    <>
+      <Dialog open onClose={() => navigate(BACK_ROUTE)} className="settings">
+        <Dialog.Panel className="settings__panel">
+          <div className="settings__panel-header">
+            <Link to={BACK_ROUTE} aria-label="Close">
+              <Close />
+            </Link>
+            <Dialog.Title as="h1">Settings</Dialog.Title>
 
-          <Form method="post">
-            <button aria-label="Delete chat" name={INTENT} value={DELETE_CHAT}>
-              <Delete />
-            </button>
-            <input type="hidden" name={CHAT_NAME} value={chat.name} />
-          </Form>
-        </div>
+            <Form method="post">
+              <button
+                aria-label="Delete chat"
+                name={INTENT}
+                value={DELETE_CHAT}
+              >
+                <Delete />
+              </button>
+              <input type="hidden" name={CHAT_NAME} value={chat.name} />
+            </Form>
+          </div>
 
-        <div className="settings__panel-main">
-          {status === 'loading' && (
-            <Spinner
-              label="uploading image"
-              class="settings__panel-main-spinner"
-            />
-          )}
-          {isDeletingChat && (
-            <Spinner
-              label="deleting chat"
-              class="settings__panel-main-spinner"
-            />
-          )}
-          <input
-            type="file"
-            className="sr-only"
-            id="image"
-            accept="image/*"
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            onChange={onImageUpload}
-          />
-
-          <label htmlFor="image">
-            {shouldShowDefaultChatImg(chat) ? (
-              <DefaultChat className="settings__panel-main-default-img" />
-            ) : (
-              <Image
-                chat={chat}
-                placeholderClassName="settings__panel-main-img-placeholder"
+          <div className="settings__panel-main">
+            {status === 'loading' && (
+              <Spinner
+                label="uploading image"
+                class="settings__panel-main-spinner"
               />
             )}
-            <span className="sr-only">Upload image</span>
-          </label>
+            {isDeletingChat && (
+              <Spinner
+                label="deleting chat"
+                class="settings__panel-main-spinner"
+              />
+            )}
+            <input
+              type="file"
+              className="sr-only"
+              id="image"
+              accept="image/*"
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onChange={onImageUpload}
+            />
 
-          <h2>{chat.name}</h2>
+            <label htmlFor="image">
+              {shouldShowDefaultChatImg(chat) ? (
+                <DefaultChat className="settings__panel-main-default-img" />
+              ) : (
+                <Image
+                  chat={chat}
+                  placeholderClassName="settings__panel-main-img-placeholder"
+                />
+              )}
+              <span className="sr-only">Upload image</span>
+            </label>
 
-          <p>{members.length} members</p>
-        </div>
+            <h2>{chat.name}</h2>
 
-        <div className="settings__panel-members">
-          <h3>Members</h3>
-          <Link to="./members" aria-label="Add new members">
-            <Plus />
-          </Link>
+            <p>{members.length} members</p>
+          </div>
 
-          <ul>
-            {members.map(({ id, username, email }) => (
-              <li key={id}>
-                <h4>~ {username}</h4>
-                <p>{email}</p>
+          <div className="settings__panel-members">
+            <h3>Members</h3>
+            <Link to="./members" aria-label="Add new members">
+              <Plus />
+            </Link>
 
-                <fetcher.Form method="post">
-                  <input type="hidden" name={MEMBER_INPUT_NAME} value={id} />
+            <ul>
+              {members.map(({ id, username, email }) => (
+                <li key={id}>
+                  <h4>~ {username}</h4>
+                  <p>{email}</p>
 
-                  <button
-                    aria-label={`Remove member ${username}`}
-                    disabled={id === chat.ownerId}
-                  >
-                    <Close />
-                  </button>
-                </fetcher.Form>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Dialog.Panel>
-    </Dialog>
+                  <fetcher.Form method="post">
+                    <input type="hidden" name={MEMBER_INPUT_NAME} value={id} />
+
+                    <button
+                      aria-label={`Remove member ${username}`}
+                      disabled={id === chat.ownerId}
+                    >
+                      <Close />
+                    </button>
+                  </fetcher.Form>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Dialog.Panel>
+      </Dialog>
+      <Outlet />
+    </>
   )
 }
 
