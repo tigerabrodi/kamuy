@@ -33,10 +33,6 @@ it('Should be able to interact with other users, chat and invite as member.', ()
 
   // Create new chat
   cy.findByRole('button', { name: 'Create new chat' }).click()
-  cy.findByText(`${ownerUser.username},`).should('be.visible')
-  cy.findByRole('link', { name: 'Settings of Untitled chat' }).should(
-    'be.visible'
-  )
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
   cy.findByLabelText(ENTER_CHAT_NAME).clear().type(ownerChat.name)
 
