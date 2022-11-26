@@ -2,7 +2,13 @@ import type { DataFunctionArgs } from '@remix-run/node'
 import type { Chat, Member, Status } from '~/types/firebase'
 
 import { json } from '@remix-run/node'
-import { Form, Link, Outlet, useLoaderData } from '@remix-run/react'
+import {
+  Form,
+  Link,
+  Outlet,
+  useLoaderData,
+  useTransition,
+} from '@remix-run/react'
 import { doc, updateDoc } from 'firebase/firestore'
 import debounce from 'lodash.debounce'
 import { useCallback, useEffect, useState } from 'react'
@@ -50,6 +56,7 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
     (member) => member.id === decodedToken.uid
   )
 
+  // TODO: handle not a member of the chat in catch boundary
   if (!isUserAMemberOfChat) {
     throw json(
       { message: "You're not a member in this chat." },
@@ -73,6 +80,7 @@ export default function ChatDetail() {
   const { initialChat, initialMembers, isNewlyCreated } =
     useLoaderData<typeof loader>()
   const firebaseContext = useFirebase()
+  const transition = useTransition()
 
   const { chat, setChat } = useGetChatSubscription({
     initialChat,
@@ -90,11 +98,12 @@ export default function ChatDetail() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleChatNameChange = useCallback(
     debounce(async (chatName: string) => {
-      if (firebaseContext?.firebaseDb && chatName !== chat.name) {
+      if (firebaseContext?.firebaseDb) {
         setChatNameChangeStatus('loading')
         const chatDoc = doc(
           firebaseContext.firebaseDb,
-          `${CHATS_COLLECTION}/${chat.id}`
+          // Using initial id here because chat.id could be stale
+          `${CHATS_COLLECTION}/${initialChat.id}`
         )
         await updateDoc(chatDoc, { name: chatName })
         setChatNameChangeStatus('success')
@@ -103,12 +112,23 @@ export default function ChatDetail() {
     [firebaseContext]
   )
 
+  const isNavigatingToAnotherChat = transition.state === 'loading'
+  const isSubscribedChatStale = chat.id !== initialChat.id
+  const isChatNameTheSame = initialChat.name === chat.name
+
+  const shouldNotUpdateChatName =
+    isNavigatingToAnotherChat || isChatNameTheSame || isSubscribedChatStale
+
   useEffect(() => {
+    if (shouldNotUpdateChatName) {
+      return
+    }
+
     handleChatNameChange(chat.name)?.catch((error) => {
       console.error(error)
       setChatNameChangeStatus('error')
     })
-  }, [chat.name, handleChatNameChange])
+  }, [chat.name, handleChatNameChange, shouldNotUpdateChatName])
 
   const context: ContextType = { chat, members: members }
 
