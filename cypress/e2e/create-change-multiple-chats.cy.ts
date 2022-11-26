@@ -1,9 +1,8 @@
 import { createNewUser, createChat } from '../support/factory'
 import { slowCypressDown } from 'cypress-slow-down'
 
-const UNTITLED = 'Untitled'
 const ENTER_CHAT_NAME = 'Enter chat name'
-const CHANGING_NAME = 'Changing name'
+const CREATE_NEW_CHAT = 'Create new chat'
 
 const newUser = createNewUser()
 
@@ -24,29 +23,29 @@ it('Should be able to create multiple chats, change their names and navigate aro
   cy.findByRole('button', { name: 'Sign In' }).click()
 
   // Create new chat
-  cy.findByRole('button', { name: 'Create new chat' }).click()
+  cy.findByRole('button', { name: CREATE_NEW_CHAT }).click()
 
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
-  cy.findByLabelText(ENTER_CHAT_NAME).should('have.value', UNTITLED)
   cy.findByLabelText(ENTER_CHAT_NAME).clear().type(chat.name)
-  cy.findByRole('alert', { name: CHANGING_NAME }).should('not.exist')
   cy.findByRole('link', { name: `${chat.name} chat` }).should('be.visible')
 
-  cy.findByRole('button', { name: 'Create new chat' }).click()
-
+  // second chat
+  cy.findByRole('button', { name: CREATE_NEW_CHAT }).click()
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
   cy.findByLabelText(ENTER_CHAT_NAME).clear().type(secondChat.name)
   cy.findByRole('link', { name: `${secondChat.name} chat` }).should(
     'be.visible'
   )
 
+  // click on first chat
   cy.findByRole('link', { name: `${chat.name} chat` }).click()
 
-  cy.findByRole('button', { name: 'Create new chat' }).click()
+  // Create third chat
+  cy.findByRole('button', { name: CREATE_NEW_CHAT }).click()
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
-  cy.findByLabelText(ENTER_CHAT_NAME).should('have.value', UNTITLED)
   cy.findByLabelText(ENTER_CHAT_NAME).clear().type(thirdChat.name)
 
+  // Click around and make sure things work
   cy.findByRole('link', { name: `${chat.name} chat` }).click()
   cy.findByLabelText(ENTER_CHAT_NAME).should('have.value', chat.name)
 
