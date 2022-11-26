@@ -1,7 +1,9 @@
 import type { LinksFunction } from '@remix-run/node'
+import type { Member } from '~/types/firebase'
 
 import { Dialog } from '@headlessui/react'
 import { Form, Link, useFetcher, useNavigate } from '@remix-run/react'
+import { useState } from 'react'
 
 import styles from './chats.$chatId.settings.members.css'
 
@@ -14,8 +16,16 @@ export const links: LinksFunction = () => {
 }
 
 export default function ChatSettingsMember() {
+  const [members, setMembers] = useState<Array<Member> | null>(null)
+
   const navigate = useNavigate()
   const fetcher = useFetcher()
+
+  function onRemoveMember(id: string) {
+    if (members) {
+      setMembers(members.filter((member) => member.id !== id))
+    }
+  }
 
   return (
     <Dialog open onClose={() => navigate(BACK_ROUTE)} className="members">
@@ -51,20 +61,16 @@ export default function ChatSettingsMember() {
           <h3>New members</h3>
 
           <ul>
-            <li>
-              <h4>~ Tiger Abrodi</h4>
-              <p>tigerabrodi@gmail.com</p>
-              <button type="button">
-                <Close />
-              </button>
-            </li>
-            <li>
-              <h4>~ Tiger Abrodi</h4>
-              <p>tigerabrodi@gmail.com</p>
-              <button type="button">
-                <Close />
-              </button>
-            </li>
+            {members &&
+              members.map(({ id, username, email }) => (
+                <li key={id}>
+                  <h4>~ {username}</h4>
+                  <p>{email}</p>
+                  <button type="button" onClick={() => onRemoveMember(id)}>
+                    <Close />
+                  </button>
+                </li>
+              ))}
           </ul>
         </div>
 
