@@ -44,7 +44,7 @@ export async function getChatsForUserWithUid(
     firebaseDb,
     CHATS_COLLECTION
   ) as CollectionReference<Chat>
-  const chatsQuery = query<Chat>(
+  const chatsQuery = query(
     chatsRef,
     where(MEMBER_IDS, 'array-contains', uid),
     orderBy(CREATED_AT, 'desc')
