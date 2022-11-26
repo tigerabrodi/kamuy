@@ -66,7 +66,11 @@ export default function ChatSettingsMember() {
                 <li key={id}>
                   <h4>~ {username}</h4>
                   <p>{email}</p>
-                  <button type="button" onClick={() => onRemoveMember(id)}>
+                  <button
+                    type="button"
+                    onClick={() => onRemoveMember(id)}
+                    aria-label={`Remove member ${username}`}
+                  >
                     <Close />
                   </button>
                 </li>
@@ -77,7 +81,9 @@ export default function ChatSettingsMember() {
         <div className="members__actions">
           <Link to={BACK_ROUTE}>Cancel</Link>
           <Form method="post">
-            <button type="submit">Save</button>
+            <button type="submit" disabled={!members}>
+              Save
+            </button>
           </Form>
         </div>
       </Dialog.Panel>
