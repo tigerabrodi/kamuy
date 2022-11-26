@@ -36,12 +36,14 @@ export function useGetChatsForUserSubscription({
         orderBy(CREATED_AT, 'desc')
       )
 
-      const unsubscribe = onSnapshot(chatsQuery, (chatsSnapshot) => {
+      const unSubscribe = onSnapshot(chatsQuery, (chatsSnapshot) => {
         const newChats = chatsSnapshot.docs.map((doc) => doc.data())
         setUserChats(newChats)
       })
 
-      return unsubscribe
+      return () => {
+        unSubscribe()
+      }
     }
   }, [firebaseContext?.firebaseDb, user.id])
 

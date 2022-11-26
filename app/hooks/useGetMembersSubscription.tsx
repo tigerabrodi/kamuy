@@ -28,7 +28,7 @@ export function useGetMembersSubscription({
 
       const membersQuery = query(membersCollectionRef)
 
-      const unsubscribe = onSnapshot(membersQuery, (membersSnapshot) => {
+      const unSubscribe = onSnapshot(membersQuery, (membersSnapshot) => {
         const newMembers = membersSnapshot.docs.map((memberDoc) =>
           memberDoc.data()
         )
@@ -36,7 +36,9 @@ export function useGetMembersSubscription({
         setMembers(z.array(MemberSchema).parse(newMembers))
       })
 
-      return unsubscribe
+      return () => {
+        unSubscribe()
+      }
     }
   }, [firebaseContext?.firebaseDb, chat.id])
 
