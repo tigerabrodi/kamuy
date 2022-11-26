@@ -20,6 +20,7 @@ specifiers:
   '@vercel/node': ^2.4.4
   cypress: ^10.9.0
   cypress-file-upload: ^5.0.8
+  cypress-slow-down: ^1.2.1
   eslint: ^8.23.1
   eslint-plugin-import: ^2.26.0
   eslint-plugin-remix: ^1.0.1
@@ -68,6 +69,7 @@ devDependencies:
   '@typescript-eslint/parser': 5.41.0_wyqvi574yv7oiwfeinomdzmc3m
   cypress: 10.11.0
   cypress-file-upload: 5.0.8_cypress@10.11.0
+  cypress-slow-down: 1.2.1
   eslint: 8.26.0
   eslint-plugin-import: 2.26.0_c2flhriocdzler6lrwbyxxyoca
   eslint-plugin-remix: 1.0.1
@@ -3896,6 +3898,16 @@ packages:
       cypress: '>3.0.0'
     dependencies:
       cypress: 10.11.0
+    dev: true
+
+  /cypress-plugin-config/1.2.0:
+    resolution: {integrity: sha512-vgMMwjeI/L+2xptqkyhJ20LRuZrrsdbPaGMNNLVq+Cwox5+9dm0E312gpMXgXRs05uyUAzL/nCm/tdTckSAgoQ==}
+    dev: true
+
+  /cypress-slow-down/1.2.1:
+    resolution: {integrity: sha512-Pd+nESR+Ca8I+mLGbBrPVMEFvJBWxkJcEdcIUDxSBnMoWI00hiIKxzEgVqCv5c6Oap2OPpnrPLbJBwveCNKLig==}
+    dependencies:
+      cypress-plugin-config: 1.2.0
     dev: true
 
   /cypress/10.11.0:
