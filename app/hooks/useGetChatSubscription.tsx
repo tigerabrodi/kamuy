@@ -16,19 +16,21 @@ export function useGetChatSubscription({ initialChat }: { initialChat: Chat }) {
     if (firebaseContext?.firebaseDb) {
       const chatDocRef = doc(
         firebaseContext?.firebaseDb,
-        `${CHATS_COLLECTION}/${chat.id}`
+        `${CHATS_COLLECTION}/${initialChat.id}`
       ) as DocumentReference<Chat>
 
-      const unsubscribe = onSnapshot(chatDocRef, (chatSnapshot) => {
+      const unSubscribe = onSnapshot(chatDocRef, (chatSnapshot) => {
         const newChat = chatSnapshot.data()
         if (newChat) {
           setChat(newChat)
         }
       })
 
-      return unsubscribe
+      return () => {
+        unSubscribe()
+      }
     }
-  }, [firebaseContext?.firebaseDb, chat.id, chat.ownerId])
+  }, [firebaseContext?.firebaseDb, initialChat.id])
 
   return { chat, setChat }
 }
