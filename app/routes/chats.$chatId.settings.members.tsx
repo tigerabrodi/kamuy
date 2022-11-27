@@ -1,8 +1,9 @@
-import type { action } from './validateMemberToBeAdded'
-import type { LinksFunction } from '@remix-run/node'
+import type { action as ValidateAction } from './validateMemberToBeAdded'
+import type { DataFunctionArgs, LinksFunction } from '@remix-run/node'
 import type { User } from '~/types/firebase'
 
 import { Dialog } from '@headlessui/react'
+import { json, redirect } from '@remix-run/node'
 import {
   Form,
   Link,
@@ -11,14 +12,26 @@ import {
   useParams,
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { z } from 'zod'
+import { zfd } from 'zod-form-data'
 
 import styles from './chats.$chatId.settings.members.css'
 
+import { Spinner } from '~/components/Spinner'
+import { addMembersToChat, getServerFirebase } from '~/firebase'
 import { Close } from '~/icons'
+import { authGetSession } from '~/sessions/auth.server'
+import {
+  validationCommitSession,
+  validationGetSession,
+} from '~/sessions/validationStates.server'
+import { ACCESS_TOKEN, SET_COOKIE, VALIDATION_STATE_SUCCESS } from '~/types'
+import { getCookie } from '~/utils/getCookie'
 
 const BACK_ROUTE = '..'
 export const MEMBER = 'memberInput'
 export const CHAT_ID = 'chatId'
+const MEMBER_IDS = 'memberIds'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -28,7 +41,7 @@ export default function ChatSettingsMember() {
   const [members, setMembers] = useState<Array<User>>([])
 
   const navigate = useNavigate()
-  const fetcher = useFetcher<typeof action>()
+  const fetcher = useFetcher<typeof ValidateAction>()
   const { chatId } = useParams<{ chatId: string }>()
 
   const fetchedUser =
@@ -58,6 +71,8 @@ export default function ChatSettingsMember() {
         >
           <Close />
         </Link>
+
+        <Spinner label="adding members" class="members__panel-spinner" />
 
         <Dialog.Title as="h1">Members</Dialog.Title>
         <h2>Add members to your chat</h2>
@@ -106,9 +121,53 @@ export default function ChatSettingsMember() {
             <button type="submit" disabled={members.length === 0}>
               Save
             </button>
+
+            {members.length > 0 &&
+              members.map(({ id }) => (
+                <input type="hidden" name={MEMBER_IDS} value={id} key={id} />
+              ))}
+            <input type="hidden" name={CHAT_ID} value={chatId} />
           </Form>
         </div>
       </Dialog.Panel>
     </Dialog>
   )
+}
+
+const FormSchema = zfd.formData(
+  z.object({
+    [MEMBER_IDS]: zfd.repeatable(z.array(z.string())),
+    [CHAT_ID]: z.string(),
+  })
+)
+
+export const action = async ({ request }: DataFunctionArgs) => {
+  const { firebaseAdminAuth } = getServerFirebase()
+
+  const [authSession, validationSession, formData] = await Promise.all([
+    authGetSession(getCookie(request)),
+    validationGetSession(getCookie(request)),
+    request.formData(),
+  ])
+
+  const { memberIds, chatId } = FormSchema.parse(formData)
+
+  const token = authSession.get(ACCESS_TOKEN)
+
+  try {
+    await firebaseAdminAuth.verifySessionCookie(token)
+    await addMembersToChat({ chatId, memberIds })
+    validationSession.flash(
+      VALIDATION_STATE_SUCCESS,
+      'New members added successfully!'
+    )
+
+    return redirect(BACK_ROUTE, {
+      headers: {
+        [SET_COOKIE]: await validationCommitSession(validationSession),
+      },
+    })
+  } catch (error) {
+    throw json({ error: 'You are unauthenticated.' }, { status: 401 })
+  }
 }

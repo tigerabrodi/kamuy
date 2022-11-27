@@ -1,6 +1,7 @@
 import type { DocumentReference } from 'firebase/firestore'
 import type { Chat, Member, Timestamp, User } from '~/types/firebase'
 
+import { getDoc } from 'firebase/firestore'
 import { collection, getDocs } from 'firebase/firestore'
 import { runTransaction, serverTimestamp } from 'firebase/firestore'
 import { doc, setDoc } from 'firebase/firestore'
@@ -14,6 +15,7 @@ import {
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
+import { MemberSchema } from '~/types/firebase'
 import { ChatSchema } from '~/types/firebase'
 
 export async function createUserWithUserData(user: User) {
@@ -100,5 +102,51 @@ export async function deleteChatWithId({
       transaction.delete(memberDoc.ref)
     })
     transaction.delete(chatDoc)
+  })
+}
+
+export async function addMembersToChat({
+  chatId,
+  memberIds,
+}: {
+  chatId: string
+  memberIds: Array<string>
+}) {
+  const { firebaseDb } = getServerFirebase()
+  await runTransaction(firebaseDb, async (transaction) => {
+    const chatDoc = doc(firebaseDb, `/${CHATS_COLLECTION}/${chatId}`)
+    const membersDocs = memberIds.map(
+      (memberId) =>
+        doc(
+          firebaseDb,
+          `/${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}/${memberId}`
+        ) as DocumentReference<Member>
+    )
+
+    const membersDataPromises = membersDocs.map((memberDoc) =>
+      getDoc(memberDoc)
+    )
+    const [chatSnapshot, ...membersSnapshots] = await Promise.all([
+      getDoc(chatDoc),
+      ...membersDataPromises,
+    ])
+
+    const chat = ChatSchema.parse(chatSnapshot.data())
+    const membersData = membersSnapshots.map((memberSnapshot) =>
+      MemberSchema.parse(memberSnapshot.data())
+    )
+
+    membersData.forEach((member) => {
+      const memberDoc = doc(
+        firebaseDb,
+        `/${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}/${member.id}`
+      ) as DocumentReference<Member>
+
+      transaction.set(memberDoc, member)
+    })
+
+    transaction.update(chatDoc, {
+      memberIds: [...chat.memberIds, ...memberIds],
+    })
   })
 }
