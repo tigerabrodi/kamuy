@@ -54,7 +54,10 @@ it('Should be able to create a chat, write messages and edit the chat.', () => {
   cy.findByRole('alert', { name: CHANGING_NAME }).should('not.exist')
 
   // Change chat name
-  cy.findByLabelText(ENTER_CHAT_NAME).clear().type(chat.name)
+  cy.findByLabelText(ENTER_CHAT_NAME).clear()
+  cy.wait(500)
+
+  cy.findByLabelText(ENTER_CHAT_NAME).type(chat.name)
   cy.findByRole('alert', { name: CHANGING_NAME }).should('be.visible')
   cy.findByRole('link', { name: `${chat.name} chat` }).should('be.visible')
 

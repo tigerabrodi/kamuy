@@ -1,7 +1,9 @@
+import { slowCypressDown } from 'cypress-slow-down'
 import { createNewUser, createChat } from '../support/factory'
 
 const ENTER_CHAT_NAME = 'Enter chat name'
 const CHANGING_NAME = 'Changing name'
+const UNTITLED = 'Untitled'
 const ADD_PEOPLE_TO_CHAT = 'Add people to chat'
 
 const ownerUser = createNewUser()
@@ -12,6 +14,8 @@ const ownerChat = createChat()
 beforeEach(() => {
   cy.clearCookies()
 })
+
+slowCypressDown(50)
 
 it('Should be able to interact with other users, chat and invite as member.', () => {
   cy.visit('/')
@@ -29,7 +33,14 @@ it('Should be able to interact with other users, chat and invite as member.', ()
   // Create new chat
   cy.findByRole('button', { name: 'Create new chat' }).click()
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
-  cy.findByLabelText(ENTER_CHAT_NAME).clear().type(ownerChat.name)
+  cy.findByLabelText(ENTER_CHAT_NAME).should('have.value', UNTITLED)
+  cy.findByText(`${ownerUser.username},`).should('be.visible')
+
+  cy.findByLabelText(ENTER_CHAT_NAME).clear()
+  cy.wait(500)
+
+  cy.findByLabelText(ENTER_CHAT_NAME).should('have.value', '')
+  cy.findByLabelText(ENTER_CHAT_NAME).type(ownerChat.name)
 
   cy.findByRole('alert', { name: CHANGING_NAME }).should('be.visible')
   cy.findByRole('link', { name: `Settings of ${ownerChat.name} chat` }).click()
@@ -62,19 +73,16 @@ it('Should be able to interact with other users, chat and invite as member.', ()
 
     cy.findByRole('button', { name: 'Save' }).click()
     cy.findByRole('alert', { name: 'adding members' }).should('be.visible')
-    cy.findByRole('status')
-      .findByText('New members added successfully!')
-      .should('be.visible')
+  })
 
-    cy.findByRole('dialog').within(() => {
-      cy.findByRole('list').within(() => {
-        cy.findByRole('heading', { name: `~ ${memberUser.username}` }).should(
-          'be.visible'
-        )
-        cy.findByRole('heading', { name: `~ ${ownerUser.username}` }).should(
-          'be.visible'
-        )
-      })
+  cy.findByRole('dialog', { name: 'Settings' }).within(() => {
+    cy.findByRole('list').within(() => {
+      cy.findByRole('heading', { name: `~ ${memberUser.username}` }).should(
+        'be.visible'
+      )
+      cy.findByRole('heading', { name: `~ ${ownerUser.username}` }).should(
+        'be.visible'
+      )
     })
   })
 })
