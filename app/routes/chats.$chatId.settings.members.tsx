@@ -10,6 +10,7 @@ import {
   useFetcher,
   useNavigate,
   useParams,
+  useTransition,
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
@@ -25,13 +26,19 @@ import {
   validationCommitSession,
   validationGetSession,
 } from '~/sessions/validationStates.server'
-import { ACCESS_TOKEN, SET_COOKIE, VALIDATION_STATE_SUCCESS } from '~/types'
+import {
+  ACCESS_TOKEN,
+  INTENT,
+  SET_COOKIE,
+  VALIDATION_STATE_SUCCESS,
+} from '~/types'
 import { getCookie } from '~/utils/getCookie'
 
 const BACK_ROUTE = '..'
 export const MEMBER = 'memberInput'
 export const CHAT_ID = 'chatId'
 const MEMBER_IDS = 'memberIds'
+const SAVE_ACTION = 'save'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -41,8 +48,13 @@ export default function ChatSettingsMember() {
   const [members, setMembers] = useState<Array<User>>([])
 
   const navigate = useNavigate()
+  const transition = useTransition()
   const fetcher = useFetcher<typeof ValidateAction>()
   const { chatId } = useParams<{ chatId: string }>()
+
+  const isSubmittingSave =
+    transition.state === 'submitting' &&
+    transition.submission.formData.get(INTENT) === SAVE_ACTION
 
   const fetchedUser =
     fetcher.data && 'user' in fetcher.data && fetcher.data.user
@@ -72,7 +84,9 @@ export default function ChatSettingsMember() {
           <Close />
         </Link>
 
-        <Spinner label="adding members" class="members__panel-spinner" />
+        {isSubmittingSave && (
+          <Spinner label="adding members" class="members__panel-spinner" />
+        )}
 
         <Dialog.Title as="h1">Members</Dialog.Title>
         <h2>Add members to your chat</h2>
@@ -118,15 +132,21 @@ export default function ChatSettingsMember() {
         <div className="members__actions">
           <Link to={BACK_ROUTE}>Cancel</Link>
           <Form method="post">
-            <button type="submit" disabled={members.length === 0}>
+            <button
+              type="submit"
+              disabled={members.length === 0}
+              name={INTENT}
+              value={SAVE_ACTION}
+            >
               Save
             </button>
+
+            <input type="hidden" name={CHAT_ID} value={chatId} />
 
             {members.length > 0 &&
               members.map(({ id }) => (
                 <input type="hidden" name={MEMBER_IDS} value={id} key={id} />
               ))}
-            <input type="hidden" name={CHAT_ID} value={chatId} />
           </Form>
         </div>
       </Dialog.Panel>
@@ -162,7 +182,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
       'New members added successfully!'
     )
 
-    return redirect(BACK_ROUTE, {
+    return redirect(`/chats/${chatId}/settings`, {
       headers: {
         [SET_COOKIE]: await validationCommitSession(validationSession),
       },

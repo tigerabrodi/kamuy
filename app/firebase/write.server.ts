@@ -15,7 +15,7 @@ import {
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
-import { MemberSchema } from '~/types/firebase'
+import { UserSchema } from '~/types/firebase'
 import { ChatSchema } from '~/types/firebase'
 
 export async function createUserWithUserData(user: User) {
@@ -115,34 +115,41 @@ export async function addMembersToChat({
   const { firebaseDb } = getServerFirebase()
   await runTransaction(firebaseDb, async (transaction) => {
     const chatDoc = doc(firebaseDb, `/${CHATS_COLLECTION}/${chatId}`)
-    const membersDocs = memberIds.map(
+    const usersToBeMembersDocs = memberIds.map(
       (memberId) =>
         doc(
           firebaseDb,
-          `/${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}/${memberId}`
-        ) as DocumentReference<Member>
+          `/${USERS_COLLECTION}/${memberId}`
+        ) as DocumentReference<User>
     )
 
-    const membersDataPromises = membersDocs.map((memberDoc) =>
-      getDoc(memberDoc)
+    const usersToBeMembersDataPromises = usersToBeMembersDocs.map((user) =>
+      getDoc(user)
     )
-    const [chatSnapshot, ...membersSnapshots] = await Promise.all([
+
+    const [chatSnapshot, ...usersSnapshots] = await Promise.all([
       getDoc(chatDoc),
-      ...membersDataPromises,
+      ...usersToBeMembersDataPromises,
     ])
 
     const chat = ChatSchema.parse(chatSnapshot.data())
-    const membersData = membersSnapshots.map((memberSnapshot) =>
-      MemberSchema.parse(memberSnapshot.data())
+    const usersDatas = usersSnapshots.map((userSnapshot) =>
+      UserSchema.parse(userSnapshot.data())
     )
 
-    membersData.forEach((member) => {
+    usersDatas.forEach((user) => {
       const memberDoc = doc(
         firebaseDb,
-        `/${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}/${member.id}`
+        `/${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}/${user.id}`
       ) as DocumentReference<Member>
+      const newMember: Member = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        addedAt: serverTimestamp() as unknown as Timestamp,
+      }
 
-      transaction.set(memberDoc, member)
+      transaction.set(memberDoc, newMember)
     })
 
     transaction.update(chatDoc, {
