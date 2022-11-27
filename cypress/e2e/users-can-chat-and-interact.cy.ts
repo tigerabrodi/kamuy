@@ -37,6 +37,7 @@ it('Should be able to interact with other users, chat and invite as member.', ()
   cy.findByText(`${ownerUser.username},`).should('be.visible')
 
   cy.findByLabelText(ENTER_CHAT_NAME).clear()
+  // debounce is 500ms
   cy.wait(500)
 
   cy.findByLabelText(ENTER_CHAT_NAME).should('have.value', '')
@@ -76,6 +77,8 @@ it('Should be able to interact with other users, chat and invite as member.', ()
   })
 
   cy.findByRole('dialog', { name: 'Settings' }).within(() => {
+    cy.findByText('2 members').should('be.visible')
+
     cy.findByRole('list').within(() => {
       cy.findByRole('heading', { name: `~ ${memberUser.username}` }).should(
         'be.visible'
@@ -83,6 +86,16 @@ it('Should be able to interact with other users, chat and invite as member.', ()
       cy.findByRole('heading', { name: `~ ${ownerUser.username}` }).should(
         'be.visible'
       )
+
+      // delete member
+      cy.findByRole('button', {
+        name: `Remove member ${memberUser.username}`,
+      }).click()
+      cy.findByRole('heading', { name: `~ ${memberUser.username}` }).should(
+        'not.exist'
+      )
     })
+
+    cy.findByText('1 members').should('be.visible')
   })
 })
