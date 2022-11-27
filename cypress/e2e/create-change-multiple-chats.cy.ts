@@ -26,13 +26,19 @@ it('Should be able to create multiple chats, change their names and navigate aro
   cy.findByRole('button', { name: CREATE_NEW_CHAT }).click()
 
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
-  cy.findByLabelText(ENTER_CHAT_NAME).clear().type(chat.name)
+  cy.findByLabelText(ENTER_CHAT_NAME).clear()
+  // debounce is 500ms
+  cy.wait(500)
+  cy.findByLabelText(ENTER_CHAT_NAME).type(chat.name)
   cy.findByRole('link', { name: `${chat.name} chat` }).should('be.visible')
 
   // second chat
   cy.findByRole('button', { name: CREATE_NEW_CHAT }).click()
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
-  cy.findByLabelText(ENTER_CHAT_NAME).clear().type(secondChat.name)
+  cy.findByLabelText(ENTER_CHAT_NAME).clear()
+  // debounce is 500ms
+  cy.wait(500)
+  cy.findByLabelText(ENTER_CHAT_NAME).type(secondChat.name)
   cy.findByRole('link', { name: `${secondChat.name} chat` }).should(
     'be.visible'
   )
@@ -43,7 +49,10 @@ it('Should be able to create multiple chats, change their names and navigate aro
   // Create third chat
   cy.findByRole('button', { name: CREATE_NEW_CHAT }).click()
   cy.findByLabelText(ENTER_CHAT_NAME).should('not.be.disabled')
-  cy.findByLabelText(ENTER_CHAT_NAME).clear().type(thirdChat.name)
+  cy.findByLabelText(ENTER_CHAT_NAME).clear()
+  // debounce is 500ms
+  cy.wait(500)
+  cy.findByLabelText(ENTER_CHAT_NAME).type(thirdChat.name)
 
   // Click around and make sure things work
   cy.findByRole('link', { name: `${chat.name} chat` }).click()
