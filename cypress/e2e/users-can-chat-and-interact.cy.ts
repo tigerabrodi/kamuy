@@ -59,5 +59,22 @@ it('Should be able to interact with other users, chat and invite as member.', ()
         )
       })
     })
+
+    cy.findByRole('button', { name: 'Save' }).click()
+    cy.findByRole('alert', { name: 'adding members' }).should('be.visible')
+    cy.findByRole('status')
+      .findByText('New members added successfully!')
+      .should('be.visible')
+
+    cy.findByRole('dialog').within(() => {
+      cy.findByRole('list').within(() => {
+        cy.findByRole('heading', { name: `~ ${memberUser.username}` }).should(
+          'be.visible'
+        )
+        cy.findByRole('heading', { name: `~ ${ownerUser.username}` }).should(
+          'be.visible'
+        )
+      })
+    })
   })
 })
