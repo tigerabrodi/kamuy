@@ -157,3 +157,30 @@ export async function addMembersToChat({
     })
   })
 }
+
+export async function removeMemberFromChat({
+  chatId,
+  memberId,
+}: {
+  chatId: string
+  memberId: string
+}) {
+  const { firebaseDb } = getServerFirebase()
+  await runTransaction(firebaseDb, async (transaction) => {
+    const chatDoc = doc(firebaseDb, `/${CHATS_COLLECTION}/${chatId}`)
+    const memberDoc = doc(
+      firebaseDb,
+      `/${CHATS_COLLECTION}/${chatId}/${MEMBERS_COLLECTION}/${memberId}`
+    )
+
+    const chatSnapshot = await transaction.get(chatDoc)
+    const chat = ChatSchema.parse(chatSnapshot.data())
+
+    const memberIds = chat.memberIds.filter((id) => id !== memberId)
+
+    transaction.delete(memberDoc)
+    transaction.update(chatDoc, {
+      memberIds,
+    })
+  })
+}

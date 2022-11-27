@@ -45,9 +45,10 @@ import { getExtensionOfFile, shouldShowDefaultChatImg } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 const BACK_ROUTE = '..'
-const MEMBER_INPUT_NAME = 'memberId'
+export const MEMBER_INPUT_NAME = 'memberId'
 const DELETE_CHAT = 'deleteChat'
 const CHAT_NAME = 'chatName'
+export const CHAT_ID = 'chatId'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]
@@ -199,8 +200,9 @@ export default function Settings() {
                   <h4>~ {username}</h4>
                   <p>{email}</p>
 
-                  <fetcher.Form method="post">
+                  <fetcher.Form method="post" action="/removeMember">
                     <input type="hidden" name={MEMBER_INPUT_NAME} value={id} />
+                    <input type="hidden" name={CHAT_ID} value={chat.id} />
 
                     <button
                       aria-label={`Remove member ${username}`}
