@@ -161,7 +161,6 @@
   display: flex;
   flex-direction: column;
   max-width: 330px;
-  min-height: 75px;
   padding: 10px;
   row-gap: 6px;
   background-color: var(--colors-white);

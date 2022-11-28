@@ -28,6 +28,18 @@ export const ChatSchema = z.object({
 
 export type Chat = z.infer<typeof ChatSchema>
 
+export const MessageSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  createdAt: TimestampSchema,
+  owner: z.object({
+    id: z.string(),
+    username: z.string(),
+  }),
+})
+
+export type Message = z.infer<typeof MessageSchema>
+
 export const MemberSchema = z.object({
   id: z.string(),
   username: z.string(),
