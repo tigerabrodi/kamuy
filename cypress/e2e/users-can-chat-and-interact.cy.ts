@@ -95,7 +95,5 @@ it('Should be able to interact with other users, chat and invite as member.', ()
         'not.exist'
       )
     })
-
-    cy.findByText('1 members').should('be.visible')
   })
 })
