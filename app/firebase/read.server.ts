@@ -65,7 +65,6 @@ export async function getChatById(id: string): Promise<Chat> {
   const chatSnapshot = await getDoc(chatRef)
   const chat = chatSnapshot.data()
 
-  // TODO: handle this in the catch boundary
   if (!chat) {
     throw new Error('Chat not found')
   }

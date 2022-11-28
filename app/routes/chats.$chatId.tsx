@@ -2,6 +2,7 @@ import type { loader as chatsLoader } from './chats'
 import type { DataFunctionArgs } from '@remix-run/node'
 import type { Chat, Member, Status } from '~/types/firebase'
 
+import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import {
   Form,
@@ -36,7 +37,11 @@ import { useGetMessagesSubscription } from '~/hooks/useGetMessagesSubscription'
 import { DefaultChat, RightFeather, Setting } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
-import { ACCESS_TOKEN } from '~/types'
+import {
+  validationCommitSession,
+  validationGetSession,
+} from '~/sessions/validationStates.server'
+import { ACCESS_TOKEN, SET_COOKIE, VALIDATION_STATE_ERROR } from '~/types'
 import { getCookie } from '~/utils/getCookie'
 
 const TYPE_A_MESSAGE = 'type a message'
@@ -55,30 +60,48 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
   const authSession = await authGetSession(getCookie(request))
   const token = authSession.get(ACCESS_TOKEN)
 
-  const decodedToken = await firebaseAdminAuth.verifySessionCookie(token)
+  try {
+    const [initialChat, initialMembers, decodedToken, validationSession] =
+      await Promise.all([
+        getChatById(chatId),
+        getMembersWithChatId(chatId),
+        firebaseAdminAuth.verifySessionCookie(token),
+        validationGetSession(getCookie(request)),
+      ])
 
-  const [initialChat, initialMembers] = await Promise.all([
-    getChatById(chatId),
-    getMembersWithChatId(chatId),
-  ])
-
-  const isUserAMemberOfChat = initialMembers.some(
-    (member) => member.id === decodedToken.uid
-  )
-
-  // TODO: handle not a member of the chat in catch boundary
-  if (!isUserAMemberOfChat) {
-    throw json(
-      { message: "You're not a member in this chat." },
-      { status: 403 }
+    const isUserAMemberOfChat = initialMembers.some(
+      (member) => member.id === decodedToken.uid
     )
-  }
 
-  return json({
-    initialChat,
-    initialMembers,
-    isNewlyCreated,
-  })
+    if (!isUserAMemberOfChat) {
+      validationSession.flash(
+        VALIDATION_STATE_ERROR,
+        'You are not a member of this chat!'
+      )
+      return redirect(`/chats`, {
+        headers: {
+          [SET_COOKIE]: await validationCommitSession(validationSession),
+        },
+      })
+    }
+
+    return json({
+      initialChat,
+      initialMembers,
+      isNewlyCreated,
+    })
+  } catch (error) {
+    const validationSession = await validationGetSession(getCookie(request))
+    validationSession.flash(
+      VALIDATION_STATE_ERROR,
+      'Something went wrong, maybe this chat does not exist?'
+    )
+    return redirect(`/chats`, {
+      headers: {
+        [SET_COOKIE]: await validationCommitSession(validationSession),
+      },
+    })
+  }
 }
 
 export type ContextType = {
@@ -299,5 +322,3 @@ export function ChatDetailPlaceholder() {
     </div>
   )
 }
-
-// TODO: Handle chat not found
