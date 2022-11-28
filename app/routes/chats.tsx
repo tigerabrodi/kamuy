@@ -1,5 +1,6 @@
 import type { DataFunctionArgs, LinksFunction } from '@remix-run/node'
-import type { User } from '~/types/firebase'
+import type { ChangeEvent } from 'react'
+import type { Chat, User } from '~/types/firebase'
 
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/node'
@@ -10,6 +11,7 @@ import {
   useLoaderData,
   useTransition,
 } from '@remix-run/react'
+import { useState } from 'react'
 
 import { ChatDetailPlaceholder } from './chats.$chatId'
 import chatIdStyles from './chats.$chatId.css'
@@ -67,6 +69,9 @@ export default function Chats() {
     initialUserChats,
   })
 
+  const [filteredUserChats, setFilteredUserChats] =
+    useState<Array<Chat>>(userChats)
+
   const isRedirectingAfterSubmission =
     transition.state === 'loading' &&
     transition.submission?.action === '/chats' &&
@@ -78,6 +83,16 @@ export default function Chats() {
 
   const shouldShowChatPlaceholder =
     isSubmittingANewChat || isRedirectingAfterSubmission
+
+  function onSearchChatsChange(event: ChangeEvent<HTMLInputElement>) {
+    event.preventDefault()
+    const value = event.target.value
+    const filteredChats = userChats.filter((chat) =>
+      chat.name.toLowerCase().includes(value.toLowerCase())
+    )
+
+    setFilteredUserChats(filteredChats)
+  }
 
   return (
     <main className="chats">
@@ -93,8 +108,6 @@ export default function Chats() {
             >
               <Plus />
             </button>
-
-            <input type="hidden" name="chatId" value="kdljgkghdgfjk" />
           </Form>
         </div>
 
@@ -104,12 +117,13 @@ export default function Chats() {
             type="text"
             placeholder="Search for chats"
             aria-label="Search for chats"
+            onChange={onSearchChatsChange}
           />
         </div>
 
         <div className="chats__items-chats">
-          {userChats.length > 0 ? (
-            userChats.map((chat) => (
+          {filteredUserChats.length > 0 ? (
+            filteredUserChats.map((chat) => (
               <Link
                 key={chat.id}
                 to={`/chats/${chat.id}`}
