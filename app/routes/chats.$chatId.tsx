@@ -195,7 +195,28 @@ export default function ChatDetail() {
         </div>
 
         <div className="chat__chats">
-          <div />
+          <div className="chat__chats-message">
+            <div>
+              <h4>~ tigerabrodi</h4>
+              <p>
+                I didn’t expect that to happen. I didn’t expect that to
+                ofjklfjelffe;f;s I didn’t expect that to happen. I didn’t expect
+                that to ofjklfjelffe;f;s I didn’t expect that to happen. I
+                didn’t expect that to ofjklfjelffe;f;s I didn’t expect that to
+              </p>
+            </div>
+          </div>
+          <div className="chat__chats-message chat__chats-message--owner">
+            <div>
+              <h4>~ tigerabrodi</h4>
+              <p>
+                I didn’t expect that to happen. I didn’t expect that to
+                ofjklfjelffe;f;s I didn’t expect that to happen. I didn’t expect
+                that to ofjklfjelffe;f;s I didn’t expect that to happen. I
+                didn’t expect that to ofjklfjelffe;f;s I didn’t expect that to
+              </p>
+            </div>
+          </div>
         </div>
 
         <Form className="chat__form">
