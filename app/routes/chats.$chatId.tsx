@@ -1,3 +1,4 @@
+import type { loader as chatsLoader } from './chats'
 import type { DataFunctionArgs } from '@remix-run/node'
 import type { Chat, Member, Status } from '~/types/firebase'
 
@@ -25,7 +26,11 @@ import {
   getServerFirebase,
 } from '~/firebase'
 import { CHATS_COLLECTION } from '~/firebase/constants'
-import { useGetChatSubscription, useGetMembersSubscription } from '~/hooks'
+import {
+  useGetChatSubscription,
+  useGetMembersSubscription,
+  useLoaderRouteData,
+} from '~/hooks'
 import { DefaultChat, RightFeather, Setting } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
@@ -86,6 +91,8 @@ export default function ChatDetail() {
     initialChat,
   })
 
+  const data = useLoaderRouteData<typeof chatsLoader>('routes/chats')
+
   const { members } = useGetMembersSubscription({
     initialMembers,
     chat,
@@ -132,10 +139,14 @@ export default function ChatDetail() {
 
   const context: ContextType = { chat, members: members }
 
-  return (
+  const isOwner = data?.user.id === chat.ownerId
+
+  return data?.user ? (
     <>
       <div className="chat">
-        <div className="chat__header">
+        <div
+          className={`chat__header ${!isOwner ? 'chat__header-member' : ''}`}
+        >
           <Image
             chat={chat}
             defaultChatClassName="chat__header-default-image"
@@ -143,32 +154,38 @@ export default function ChatDetail() {
           />
 
           <div className="chat__header-input">
-            <input
-              type="text"
-              id="title"
-              name="title"
-              placeholder={ENTER_CHAT_NAME}
-              aria-label={ENTER_CHAT_NAME}
-              autoFocus={isNewlyCreated}
-              value={chat.name}
-              onChange={(event) =>
-                setChat((prevChat) => ({
-                  ...prevChat,
-                  name: event.target.value,
-                }))
-              }
-            />
+            {isOwner ? (
+              <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder={ENTER_CHAT_NAME}
+                aria-label={ENTER_CHAT_NAME}
+                autoFocus={isNewlyCreated}
+                value={chat.name}
+                onChange={(event) =>
+                  setChat((prevChat) => ({
+                    ...prevChat,
+                    name: event.target.value,
+                  }))
+                }
+              />
+            ) : (
+              <h3>{chat.name}</h3>
+            )}
             {chatNameChangeStatus === 'loading' && (
               <Spinner label="Changing name" />
             )}
           </div>
-          <Link
-            to={`./settings`}
-            aria-label={`Settings of ${chat.name} chat`}
-            prefetch="intent"
-          >
-            <Setting />
-          </Link>
+          {isOwner && (
+            <Link
+              to={`./settings`}
+              aria-label={`Settings of ${chat.name} chat`}
+              prefetch="intent"
+            >
+              <Setting />
+            </Link>
+          )}
 
           <p>
             {members.map((member) => (
@@ -197,7 +214,7 @@ export default function ChatDetail() {
       </div>
       <Outlet context={context} />
     </>
-  )
+  ) : null
 }
 
 export function ChatDetailPlaceholder() {
