@@ -43,6 +43,7 @@ import {
   validationGetSession,
 } from '~/sessions/validationStates.server'
 import { ACCESS_TOKEN, SET_COOKIE, VALIDATION_STATE_ERROR } from '~/types'
+import { getDateWithTimestamp } from '~/utils'
 import { getCookie } from '~/utils/getCookie'
 
 const TYPE_A_MESSAGE = 'type a message'
@@ -122,6 +123,7 @@ export default function ChatDetail() {
   const firebaseContext = useFirebase()
   const transition = useTransition()
   const messageFetcher = useFetcher()
+  const scrollElementRef = useRef<HTMLDivElement>(null)
 
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -187,6 +189,12 @@ export default function ChatDetail() {
     }
   }, [isSubmitting])
 
+  useEffect(() => {
+    if (scrollElementRef) {
+      scrollElementRef.current?.scrollIntoView()
+    }
+  }, [isSubmitting])
+
   const context: ContextType = { chat, members: members }
   const isOwner = data?.user.id === chat.ownerId
 
@@ -245,19 +253,37 @@ export default function ChatDetail() {
 
         <div className="chat__chats">
           {messages.length > 0 &&
-            messages.map(({ id, owner, text }) => (
+            messages.map(({ id, owner, text, createdAt }) => (
               <div
                 className={`chat__chats-message ${
                   data.user.id === owner.id ? 'chat__chats-message--owner' : ''
                 }`}
                 key={id}
               >
-                <div>
-                  <h4>~ {owner.username}</h4>
-                  <p>{text}</p>
+                <div className="chat__chats-message-wrapper">
+                  <div>
+                    <h4>~ {owner.username}</h4>
+                    <p>{text}</p>
+                  </div>
+
+                  <p
+                    className={`chat__chats-message-date ${
+                      data.user.id === owner.id
+                        ? 'chat__chats-message-date--owner'
+                        : ''
+                    }`}
+                  >
+                    {getDateWithTimestamp(createdAt)}
+                  </p>
                 </div>
               </div>
             ))}
+
+          <div
+            tabIndex={-1}
+            style={{ marginTop: '-20px' }}
+            ref={scrollElementRef}
+          />
         </div>
 
         <messageFetcher.Form
