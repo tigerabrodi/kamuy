@@ -17,7 +17,18 @@ export function getCurrentTimestamp(): Timestamp {
 }
 
 export function getDateWithTimestamp(firebaseDate: Timestamp) {
-  return new Date(firebaseDate.seconds * 1000).toISOString().slice(0, 10)
+  const fullDateAsString = new Date(
+    firebaseDate.seconds * 1000
+  ).toLocaleString()
+
+  const fullDateAsStringSplitted = fullDateAsString.split(',')
+
+  const dayDate = fullDateAsStringSplitted[0]
+  const time = fullDateAsStringSplitted[1].slice(1)
+  const timePeriod = time.split(' ')[1]
+  const timeWithoutSeconds = time.split(':')[0] + ':' + time.split(':')[1]
+
+  return `${dayDate} ${timeWithoutSeconds}${timePeriod}` // 2021-08-01 12:00 AM
 }
 
 export function getExtensionOfFile(file: File) {
