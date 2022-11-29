@@ -27,7 +27,7 @@ import {
   getMembersWithChatId,
   getServerFirebase,
 } from '~/firebase'
-import { CHATS_COLLECTION } from '~/firebase/constants'
+import { CHATS_COLLECTION, CHAT_ID } from '~/firebase/constants'
 import {
   useGetChatSubscription,
   useGetMembersSubscription,
@@ -48,7 +48,6 @@ const TYPE_A_MESSAGE = 'type a message'
 const ENTER_CHAT_NAME = 'Enter chat name'
 export const MESSAGE = 'message'
 export const OWNER_USERNAME = 'ownerUsername'
-export const CHAT_ID = 'chatId'
 
 export const loader = async ({ params, request }: DataFunctionArgs) => {
   const { firebaseAdminAuth } = getServerFirebase()

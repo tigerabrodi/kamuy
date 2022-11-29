@@ -7,10 +7,14 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 
-import { CHAT_ID, MESSAGE, OWNER_USERNAME } from './chats.$chatId'
+import { MESSAGE, OWNER_USERNAME } from './chats.$chatId'
 
 import { getServerFirebase } from '~/firebase'
-import { CHATS_COLLECTION, MESSAGES_COLLECTION } from '~/firebase/constants'
+import {
+  CHATS_COLLECTION,
+  CHAT_ID,
+  MESSAGES_COLLECTION,
+} from '~/firebase/constants'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN } from '~/types'
 import { getCookie } from '~/utils/getCookie'

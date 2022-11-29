@@ -27,6 +27,7 @@ import styles from './chats.$chatId.settings.css'
 import { Image } from '~/components'
 import { Spinner } from '~/components/Spinner'
 import { deleteChatWithId, getChatById, getServerFirebase } from '~/firebase'
+import { CHAT_ID } from '~/firebase/constants'
 import { Close, DefaultChat, Delete, Plus } from '~/icons'
 import { useFirebase } from '~/providers/FirebaseProvider'
 import { authGetSession } from '~/sessions/auth.server'
@@ -48,7 +49,6 @@ const BACK_ROUTE = '..'
 export const MEMBER_INPUT_NAME = 'memberId'
 const DELETE_CHAT = 'deleteChat'
 const CHAT_NAME = 'chatName'
-export const CHAT_ID = 'chatId'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }]

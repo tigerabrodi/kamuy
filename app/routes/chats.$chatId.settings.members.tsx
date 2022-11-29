@@ -20,6 +20,7 @@ import styles from './chats.$chatId.settings.members.css'
 
 import { Spinner } from '~/components/Spinner'
 import { addMembersToChat, getServerFirebase } from '~/firebase'
+import { CHAT_ID } from '~/firebase/constants'
 import { Close } from '~/icons'
 import { authGetSession } from '~/sessions/auth.server'
 import {
@@ -36,7 +37,6 @@ import { getCookie } from '~/utils/getCookie'
 
 const BACK_ROUTE = '..'
 export const MEMBER = 'memberInput'
-export const CHAT_ID = 'chatId'
 const MEMBER_IDS = 'memberIds'
 const SAVE_ACTION = 'save'
 
