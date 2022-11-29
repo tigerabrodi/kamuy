@@ -14,7 +14,7 @@ import {
 } from '@remix-run/react'
 import { doc, updateDoc } from 'firebase/firestore'
 import debounce from 'lodash.debounce'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { z } from 'zod'
 import { zx } from 'zodix'
 
@@ -123,6 +123,8 @@ export default function ChatDetail() {
   const transition = useTransition()
   const messageFetcher = useFetcher()
 
+  const formRef = useRef<HTMLFormElement>(null)
+
   const { chat, setChat } = useGetChatSubscription({
     initialChat,
   })
@@ -163,9 +165,10 @@ export default function ChatDetail() {
   const isNavigatingToAnotherChat = transition.state === 'loading'
   const isSubscribedChatStale = chat.id !== initialChat.id
   const isChatNameTheSame = initialChat.name === chat.name
-
   const shouldNotUpdateChatName =
     isNavigatingToAnotherChat || isChatNameTheSame || isSubscribedChatStale
+
+  const isSubmitting = messageFetcher.state === 'submitting'
 
   useEffect(() => {
     if (shouldNotUpdateChatName) {
@@ -178,8 +181,13 @@ export default function ChatDetail() {
     })
   }, [chat.name, handleChatNameChange, shouldNotUpdateChatName])
 
-  const context: ContextType = { chat, members: members }
+  useEffect(() => {
+    if (isSubmitting) {
+      formRef.current?.reset()
+    }
+  }, [isSubmitting])
 
+  const context: ContextType = { chat, members: members }
   const isOwner = data?.user.id === chat.ownerId
 
   return data?.user ? (
@@ -256,6 +264,7 @@ export default function ChatDetail() {
           className="chat__form"
           method="post"
           action="/addMessageToChat"
+          ref={formRef}
         >
           <input
             type="text"

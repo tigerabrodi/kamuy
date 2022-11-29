@@ -96,7 +96,8 @@ export async function getMessagesOfChatWithId(chatId: string) {
     firebaseDb,
     `${CHATS_COLLECTION}/${chatId}/${MESSAGES_COLLECTION}`
   ) as CollectionReference<Message>
-  const messagesSnapshot = await getDocs(messagesRef)
+  const messagesQuery = query(messagesRef, orderBy(CREATED_AT, 'asc'))
+  const messagesSnapshot = await getDocs(messagesQuery)
   const messages = messagesSnapshot.docs.map((doc) => doc.data())
   return messages
 }
