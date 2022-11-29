@@ -184,6 +184,6 @@
 .chat__chats-message div p {
   font-size: calc(1rem * 13 / 16);
   color: var(--colors-black);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.3;
 }
