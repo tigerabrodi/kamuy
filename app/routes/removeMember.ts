@@ -4,9 +4,10 @@ import { json } from '@remix-run/node'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 
-import { CHAT_ID, MEMBER_INPUT_NAME } from './chats.$chatId.settings'
+import { MEMBER_INPUT_NAME } from './chats.$chatId.settings'
 
 import { getServerFirebase, removeMemberFromChat } from '~/firebase'
+import { CHAT_ID } from '~/firebase/constants'
 import { authGetSession } from '~/sessions/auth.server'
 import { ACCESS_TOKEN } from '~/types'
 import { getCookie } from '~/utils/getCookie'

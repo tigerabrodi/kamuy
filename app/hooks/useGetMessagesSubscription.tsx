@@ -7,9 +7,17 @@ import { useEffect, useState } from 'react'
 import { CHATS_COLLECTION, MESSAGES_COLLECTION } from '~/firebase/constants'
 import { useFirebase } from '~/providers/FirebaseProvider'
 
-export function useGetMessagesSubscription({ chatId }: { chatId: string }) {
+export function useGetMessagesSubscription({
+  chatId,
+  initialMessages,
+}: {
+  chatId: string
+  initialMessages: Array<Message> | undefined
+}) {
   const firebaseContext = useFirebase()
-  const [messages, setMessages] = useState<Array<Message>>([])
+  const [messages, setMessages] = useState<Array<Message>>(
+    initialMessages ?? []
+  )
 
   useEffect(() => {
     if (firebaseContext?.firebaseDb) {

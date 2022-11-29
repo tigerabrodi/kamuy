@@ -14,10 +14,14 @@ import {
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 
-import { CHAT_ID, MEMBER } from './chats.$chatId.settings.members'
+import { MEMBER } from './chats.$chatId.settings.members'
 
 import { getServerFirebase } from '~/firebase'
-import { CHATS_COLLECTION, USERS_COLLECTION } from '~/firebase/constants'
+import {
+  CHATS_COLLECTION,
+  CHAT_ID,
+  USERS_COLLECTION,
+} from '~/firebase/constants'
 import { authGetSession } from '~/sessions/auth.server'
 import {
   validationCommitSession,

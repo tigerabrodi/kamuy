@@ -25,6 +25,7 @@ import { Spinner } from '~/components/Spinner'
 import {
   getChatById,
   getMembersWithChatId,
+  getMessagesOfChatWithId,
   getServerFirebase,
 } from '~/firebase'
 import { CHATS_COLLECTION, CHAT_ID } from '~/firebase/constants'
@@ -60,13 +61,19 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
   const token = authSession.get(ACCESS_TOKEN)
 
   try {
-    const [initialChat, initialMembers, decodedToken, validationSession] =
-      await Promise.all([
-        getChatById(chatId),
-        getMembersWithChatId(chatId),
-        firebaseAdminAuth.verifySessionCookie(token),
-        validationGetSession(getCookie(request)),
-      ])
+    const [
+      initialChat,
+      initialMembers,
+      decodedToken,
+      validationSession,
+      initialMessages,
+    ] = await Promise.all([
+      getChatById(chatId),
+      getMembersWithChatId(chatId),
+      firebaseAdminAuth.verifySessionCookie(token),
+      validationGetSession(getCookie(request)),
+      getMessagesOfChatWithId(chatId),
+    ])
 
     const isUserAMemberOfChat = initialMembers.some(
       (member) => member.id === decodedToken.uid
@@ -88,6 +95,7 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
       initialChat,
       initialMembers,
       isNewlyCreated,
+      initialMessages,
     })
   } catch (error) {
     const validationSession = await validationGetSession(getCookie(request))
@@ -109,7 +117,7 @@ export type ContextType = {
 }
 
 export default function ChatDetail() {
-  const { initialChat, initialMembers, isNewlyCreated } =
+  const { initialChat, initialMembers, isNewlyCreated, initialMessages } =
     useLoaderData<typeof loader>()
   const firebaseContext = useFirebase()
   const transition = useTransition()
@@ -119,7 +127,10 @@ export default function ChatDetail() {
     initialChat,
   })
 
-  const { messages } = useGetMessagesSubscription({ chatId: initialChat.id })
+  const { messages } = useGetMessagesSubscription({
+    chatId: initialChat.id,
+    initialMessages,
+  })
 
   const data = useLoaderRouteData<typeof chatsLoader>('routes/chats')
 

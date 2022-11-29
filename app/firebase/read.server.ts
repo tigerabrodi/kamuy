@@ -1,5 +1,5 @@
 import type { CollectionReference, DocumentReference } from 'firebase/firestore'
-import type { Chat, Member, User } from '~/types/firebase'
+import type { Chat, Member, Message, User } from '~/types/firebase'
 
 import { orderBy } from 'firebase/firestore'
 import { collection, getDocs, query, where } from 'firebase/firestore'
@@ -12,6 +12,7 @@ import {
   USERS_COLLECTION,
   CREATED_AT,
   MEMBER_IDS,
+  MESSAGES_COLLECTION,
 } from './constants'
 import { getServerFirebase } from './firebase.server'
 
@@ -87,4 +88,15 @@ export async function getMembersWithChatId(
   const members = membersSnapshot.docs.map((doc) => doc.data())
 
   return z.array(MemberSchema).parse(members)
+}
+
+export async function getMessagesOfChatWithId(chatId: string) {
+  const { firebaseDb } = getServerFirebase()
+  const messagesRef = collection(
+    firebaseDb,
+    `${CHATS_COLLECTION}/${chatId}/${MESSAGES_COLLECTION}`
+  ) as CollectionReference<Message>
+  const messagesSnapshot = await getDocs(messagesRef)
+  const messages = messagesSnapshot.docs.map((doc) => doc.data())
+  return messages
 }
