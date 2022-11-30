@@ -107,7 +107,7 @@
   width: 100%;
   height: 70px;
   padding: 0px 40px;
-  column-gap: 80px;
+  column-gap: 40px;
   background-color: var(--colors-gray);
 }
 
@@ -119,7 +119,7 @@
   font-size: calc(1rem * 16 / 16);
   color: var(--colors-teal-600);
   height: 35px;
-  width: 630px;
+  width: 90%;
 }
 
 .chat__form input:focus {
