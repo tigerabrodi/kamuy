@@ -99,6 +99,10 @@
   border-bottom: 2px solid var(--colors-gray);
 }
 
+.chats__items-chats a:hover {
+  background-color: var(--colors-gray);
+}
+
 .chats__items-chats p {
   font-weight: 600;
   font-size: calc(1rem * 18 / 16);
