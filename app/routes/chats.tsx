@@ -1,5 +1,4 @@
 import type { DataFunctionArgs, LinksFunction } from '@remix-run/node'
-import type { ChangeEvent } from 'react'
 import type { Chat, User } from '~/types/firebase'
 
 import { redirect } from '@remix-run/node'
@@ -11,6 +10,7 @@ import {
   useLoaderData,
   useTransition,
 } from '@remix-run/react'
+import { useEffect } from 'react'
 import { useState } from 'react'
 
 import { ChatDetailPlaceholder } from './chats.$chatId'
@@ -69,6 +69,7 @@ export default function Chats() {
     initialUserChats,
   })
 
+  const [filteredValue, setFilteredValue] = useState('')
   const [filteredUserChats, setFilteredUserChats] =
     useState<Array<Chat>>(userChats)
 
@@ -84,15 +85,18 @@ export default function Chats() {
   const shouldShowChatPlaceholder =
     isSubmittingANewChat || isRedirectingAfterSubmission
 
-  function onSearchChatsChange(event: ChangeEvent<HTMLInputElement>) {
-    event.preventDefault()
-    const value = event.target.value
+  useEffect(() => {
+    if (filteredValue === '') {
+      setFilteredUserChats(userChats)
+      return
+    }
+
     const filteredChats = userChats.filter((chat) =>
-      chat.name.toLowerCase().includes(value.toLowerCase())
+      chat.name.toLowerCase().includes(filteredValue.toLowerCase())
     )
 
     setFilteredUserChats(filteredChats)
-  }
+  }, [filteredValue, userChats])
 
   return (
     <main className="chats">
@@ -117,7 +121,8 @@ export default function Chats() {
             type="text"
             placeholder="Search for chats"
             aria-label="Search for chats"
-            onChange={onSearchChatsChange}
+            value={filteredValue}
+            onChange={(event) => setFilteredValue(event.target.value)}
           />
         </div>
 
