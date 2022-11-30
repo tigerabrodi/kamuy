@@ -58,6 +58,22 @@ export const meta: MetaFunction = () => ({
   title: 'Kamuy',
   description: 'A chat app inspired by WhatsApp Web',
   viewport: 'width=device-width,initial-scale=1',
+  keywords: 'remix,chat,whatsapp,web,react,typescript,css,firebase,chatapp',
+  'og:title': 'Kamuy',
+  'og:type': 'website',
+  'og:url': 'http://kamuy.vercel.app/',
+  'og:image':
+    'https://user-images.githubusercontent.com/49603590/204720308-83885cc4-a20e-4103-86d9-46142755ee3a.png',
+  'og:card': 'summary_large_image',
+  'og:creator': '@tabrodi',
+  'og:site': 'http://kamuy.vercel.app/',
+  'og:description': 'A chat app inspired by WhatsApp Web',
+  'twitter:image':
+    'https://user-images.githubusercontent.com/49603590/204720308-83885cc4-a20e-4103-86d9-46142755ee3a.png',
+  'twitter:card': 'summary_large_image',
+  'twitter:creator': '@tabrodi',
+  'twitter:title': 'Kamuy',
+  'twitter:description': 'A chat app inspired by WhatsApp Web',
 })
 
 export const links: LinksFunction = () => {
