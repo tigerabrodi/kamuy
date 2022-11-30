@@ -124,9 +124,12 @@ export default function ChatDetail() {
   const transition = useTransition()
   const messageFetcher = useFetcher()
   const scrollElementRef = useRef<HTMLDivElement>(null)
-  const previousSetOfMessagesRef = useRef<Array<Message>>([])
 
   const formRef = useRef<HTMLFormElement>(null)
+
+  const [previousSetOfMessages, setPreviousSetOfMessages] = useState<
+    Array<Message>
+  >([])
 
   const { chat, setChat } = useGetChatSubscription({
     initialChat,
@@ -196,24 +199,27 @@ export default function ChatDetail() {
     }
 
     // Messages exist but is first time loading
-    if (previousSetOfMessagesRef.current.length === 0) {
-      previousSetOfMessagesRef.current = messages
+    if (previousSetOfMessages.length === 0) {
+      setPreviousSetOfMessages(messages)
+      scrollElementRef.current?.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+
+    if (messages.length === previousSetOfMessages.length) {
       scrollElementRef.current?.scrollIntoView({ behavior: 'smooth' })
       return
     }
 
     const lastMessage = messages[messages.length - 1]
     const lastPreviousMessage =
-      previousSetOfMessagesRef.current[
-        previousSetOfMessagesRef.current.length - 1
-      ]
+      previousSetOfMessages[previousSetOfMessages.length - 1]
 
     // New messages has been added
     if (lastMessage.id !== lastPreviousMessage.id) {
-      previousSetOfMessagesRef.current = messages
+      setPreviousSetOfMessages(messages)
       scrollElementRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [messages])
+  }, [messages, previousSetOfMessages])
 
   const context: ContextType = { chat, members: members }
   const isOwner = data?.user.id === chat.ownerId
