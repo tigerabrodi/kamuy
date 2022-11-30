@@ -8,6 +8,7 @@ import {
   Link,
   Outlet,
   useLoaderData,
+  useParams,
   useTransition,
 } from '@remix-run/react'
 import { useEffect } from 'react'
@@ -63,6 +64,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 export default function Chats() {
   const { user, initialUserChats } = useLoaderData<typeof loader>()
   const transition = useTransition()
+  const { chatId } = useParams<{ chatId: string }>()
 
   const { userChats } = useGetChatsForUserSubscription({
     user: user as User,
@@ -134,6 +136,7 @@ export default function Chats() {
                 to={`/chats/${chat.id}`}
                 aria-label={`${chat.name} chat`}
                 prefetch="intent"
+                className={chatId === chat.id ? 'active' : ''}
               >
                 <Image
                   chat={chat}

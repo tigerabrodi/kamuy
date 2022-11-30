@@ -141,3 +141,7 @@
   background-color: var(--colors-gray);
   position: relative;
 }
+
+.active {
+  background-color: var(--colors-gray);
+}
