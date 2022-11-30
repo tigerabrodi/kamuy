@@ -1,6 +1,6 @@
 import type { loader as chatsLoader } from './chats'
 import type { DataFunctionArgs } from '@remix-run/node'
-import type { Chat, Member, Status } from '~/types/firebase'
+import type { Chat, Member, Message, Status } from '~/types/firebase'
 
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/node'
@@ -124,6 +124,7 @@ export default function ChatDetail() {
   const transition = useTransition()
   const messageFetcher = useFetcher()
   const scrollElementRef = useRef<HTMLDivElement>(null)
+  const previousSetOfMessagesRef = useRef<Array<Message>>([])
 
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -190,10 +191,29 @@ export default function ChatDetail() {
   }, [isSubmitting])
 
   useEffect(() => {
-    if (scrollElementRef) {
-      scrollElementRef.current?.scrollIntoView()
+    if (messages.length === 0) {
+      return
     }
-  }, [isSubmitting])
+
+    // Messages exist but is first time loading
+    if (previousSetOfMessagesRef.current.length === 0) {
+      previousSetOfMessagesRef.current = messages
+      scrollElementRef.current?.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+
+    const lastMessage = messages[messages.length - 1]
+    const lastPreviousMessage =
+      previousSetOfMessagesRef.current[
+        previousSetOfMessagesRef.current.length - 1
+      ]
+
+    // New messages has been added
+    if (lastMessage.id !== lastPreviousMessage.id) {
+      previousSetOfMessagesRef.current = messages
+      scrollElementRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages])
 
   const context: ContextType = { chat, members: members }
   const isOwner = data?.user.id === chat.ownerId
