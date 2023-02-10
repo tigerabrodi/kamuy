@@ -159,7 +159,7 @@ export default function ChatDetail() {
         const chatDoc = doc(
           firebaseContext.firebaseDb,
           // Using initial id here because chat.id could be stale
-          `${CHATS_COLLECTION}/${initialChat.id}`
+          `/${CHATS_COLLECTION}/${initialChat.id}`
         )
         await updateDoc(chatDoc, { name: chatName })
         setChatNameChangeStatus('success')
