@@ -14,7 +14,7 @@
 }
 
 .chat__default h1 {
-  font-weight: bold;
+  font-weight: 700;
   font-size: calc(1rem * 20 / 16);
   color: var(--colors-teal-800);
 }
