@@ -35,6 +35,10 @@ import {
   VALIDATION_STATE_ERROR,
   VALIDATION_STATE_SUCCESS,
 } from './types'
+import Overpass400 from '@fontsource/overpass/400.css'
+import Overpass500 from '@fontsource/overpass/500.css'
+import Overpass600 from '@fontsource/overpass/600.css'
+import Overpass700 from '@fontsource/overpass/700.css'
 import { FirebaseOptionsSchema } from './types/firebase'
 import { getCookie } from './utils/getCookie'
 
@@ -80,6 +84,10 @@ export const links: LinksFunction = () => {
   return [
     { rel: 'stylesheet', href: styles },
     { rel: 'stylesheet', href: navigationStyles },
+    { rel: 'stylesheet', href: Overpass400 },
+    { rel: 'stylesheet', href: Overpass500 },
+    { rel: 'stylesheet', href: Overpass600 },
+    { rel: 'stylesheet', href: Overpass700 },
   ]
 }
 
