@@ -69,6 +69,6 @@
   "shadows": {
     "scope": "css",
     "prefix": "shw",
-    "body": ["var(--shadows-$1)"]
+    "body": ["box-shadow: var(--shadows-$1);"]
   }
 }
