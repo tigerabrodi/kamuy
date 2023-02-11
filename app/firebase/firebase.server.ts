@@ -1,5 +1,9 @@
 import type { ServiceAccount } from 'firebase-admin/app'
 
+import { getApp, getApps, initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { initializeFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 import {
   cert,
   initializeApp as initializeAdminApp,
@@ -7,10 +11,6 @@ import {
   getApp as getAdminApp,
 } from 'firebase-admin/app'
 import { getAuth as adminGetAuth } from 'firebase-admin/auth'
-import { getApp, getApps, initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { initializeFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
 
 import { config } from './firebase-config.server'
 

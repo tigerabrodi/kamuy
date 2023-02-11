@@ -5,6 +5,10 @@ import type {
   Session,
 } from '@remix-run/node'
 
+import Overpass400 from '@fontsource/overpass/400.css'
+import Overpass500 from '@fontsource/overpass/500.css'
+import Overpass600 from '@fontsource/overpass/600.css'
+import Overpass700 from '@fontsource/overpass/700.css'
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import {
@@ -35,10 +39,6 @@ import {
   VALIDATION_STATE_ERROR,
   VALIDATION_STATE_SUCCESS,
 } from './types'
-import Overpass400 from '@fontsource/overpass/400.css'
-import Overpass500 from '@fontsource/overpass/500.css'
-import Overpass600 from '@fontsource/overpass/600.css'
-import Overpass700 from '@fontsource/overpass/700.css'
 import { FirebaseOptionsSchema } from './types/firebase'
 import { getCookie } from './utils/getCookie'
 
