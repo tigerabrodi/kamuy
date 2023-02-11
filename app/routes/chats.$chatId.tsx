@@ -13,6 +13,7 @@ import {
   useTransition,
 } from '@remix-run/react'
 import { doc, updateDoc } from 'firebase/firestore'
+import { motion } from 'framer-motion'
 import debounce from 'lodash.debounce'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { z } from 'zod'
@@ -286,9 +287,12 @@ export default function ChatDetail() {
                 }`}
                 key={id}
               >
-                <div className="chat__chats-message-wrapper">
+                <motion.div
+                  animate={{ y: [8, 0], opacity: [0, 1] }}
+                  className="chat__chats-message-wrapper"
+                >
                   <div>
-                    <h4>~ {owner.username}</h4>
+                    {data.user.id !== owner.id && <h4>~ {owner.username}</h4>}
                     <p>{text}</p>
                   </div>
 
@@ -301,7 +305,7 @@ export default function ChatDetail() {
                   >
                     {getDateWithTimestamp(createdAt)}
                   </p>
-                </div>
+                </motion.div>
               </div>
             ))}
 
