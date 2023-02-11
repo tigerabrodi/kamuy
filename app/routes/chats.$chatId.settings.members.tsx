@@ -12,7 +12,8 @@ import {
   useParams,
   useTransition,
 } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 
@@ -50,11 +51,15 @@ export default function ChatSettingsMember() {
   const navigate = useNavigate()
   const transition = useTransition()
   const fetcher = useFetcher<typeof ValidateAction>()
+  const formRef = useRef<HTMLFormElement | null>(null)
   const { chatId } = useParams<{ chatId: string }>()
 
   const isSubmittingSave =
     transition.state === 'submitting' &&
     transition.submission.formData.get(INTENT) === SAVE_ACTION
+
+  const isAddingNewMember =
+    fetcher.state === 'loading' || fetcher.state === 'submitting'
 
   const fetchedUser =
     fetcher.data && 'user' in fetcher.data && fetcher.data.user
@@ -70,6 +75,12 @@ export default function ChatSettingsMember() {
       }
     }
   }, [fetchedUser, members])
+
+  useEffect(() => {
+    if (fetcher.type === 'done') {
+      formRef.current?.reset()
+    }
+  }, [fetcher.type])
 
   return (
     <Dialog open onClose={() => navigate(BACK_ROUTE)} className="members">
@@ -95,6 +106,7 @@ export default function ChatSettingsMember() {
           action="/validateMemberToBeAdded"
           method="post"
           className="members__search"
+          ref={formRef}
         >
           <label htmlFor={MEMBER}>Add people to chat</label>
           <p>
@@ -111,7 +123,9 @@ export default function ChatSettingsMember() {
               name={MEMBER}
               placeholder="john@gmail.com"
             />
-            <button type="submit">Add</button>
+            <button type="submit" disabled={isAddingNewMember}>
+              {isAddingNewMember ? 'Adding...' : 'Add'}
+            </button>
           </div>
         </fetcher.Form>
 
@@ -121,10 +135,10 @@ export default function ChatSettingsMember() {
           <ul>
             {members &&
               members.map(({ id, username, email }) => (
-                <li key={id}>
+                <motion.li animate={{ scale: [0, 1] }} key={id}>
                   <h4>~ {username}</h4>
                   <p>{email}</p>
-                </li>
+                </motion.li>
               ))}
           </ul>
         </div>
